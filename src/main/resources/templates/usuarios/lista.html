@@ -1,0 +1,140 @@
+<!DOCTYPE html>
+<html xmlns:th="http://www.thymeleaf.org" lang="es">
+<head th:replace="~{fragments/footer :: head('Usuarios')}">
+    <title>Usuarios - BiblioTech</title>
+</head>
+<body>
+    <div class="wrapper">
+        <!-- Sidebar -->
+        <div th:replace="~{fragments/sidebar :: sidebar}"></div>
+        
+        <!-- Contenido Principal -->
+        <div class="main-content">
+            <!-- Header -->
+            <header th:replace="~{fragments/header :: header}" th:with="pageTitle='Gestión de Usuarios'"></header>
+            
+            <!-- Contenido de la Página -->
+            <div class="page-content">
+                <!-- Alertas -->
+                <div th:replace="~{fragments/footer :: alerts}"></div>
+                
+                <!-- Cabecera con estadísticas -->
+                <div class="row g-4 mb-4">
+                    <div class="col-md-4">
+                        <div class="stat-card primary">
+                            <div class="d-flex justify-content-between align-items-center">
+                                <div>
+                                    <div class="stat-value" th:text="${totalUsuarios}">0</div>
+                                    <div class="stat-label">Total Usuarios</div>
+                                </div>
+                                <i class="bi bi-people stat-icon"></i>
+                            </div>
+                        </div>
+                    </div>
+                    <div class="col-md-4">
+                        <div class="stat-card info">
+                            <div class="d-flex justify-content-between align-items-center">
+                                <div>
+                                    <div class="stat-value" th:text="${totalAdmins}">0</div>
+                                    <div class="stat-label">Administradores</div>
+                                </div>
+                                <i class="bi bi-shield-check stat-icon"></i>
+                            </div>
+                        </div>
+                    </div>
+                    <div class="col-md-4">
+                        <div class="stat-card success">
+                            <div class="d-flex justify-content-between align-items-center">
+                                <div>
+                                    <div class="stat-value" th:text="${totalEmpleados}">0</div>
+                                    <div class="stat-label">Empleados</div>
+                                </div>
+                                <i class="bi bi-person-badge stat-icon"></i>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+                
+                <!-- Tabla de Usuarios -->
+                <div class="table-container">
+                    <div class="table-header">
+                        <h5><i class="bi bi-person-gear me-2"></i>Usuarios del Sistema</h5>
+                        <a th:href="@{/usuarios/nuevo}" class="btn btn-primary">
+                            <i class="bi bi-plus-circle me-2"></i>Nuevo Usuario
+                        </a>
+                    </div>
+                    
+                    <div class="table-responsive">
+                        <table class="table table-custom mb-0" id="tablaUsuarios">
+                            <thead>
+                                <tr>
+                                    <th>ID</th>
+                                    <th>Nombre</th>
+                                    <th>Username</th>
+                                    <th>Rol</th>
+                                    <th>Fecha Registro</th>
+                                    <th class="text-center">Acciones</th>
+                                </tr>
+                            </thead>
+                            <tbody>
+                                <tr th:each="usuario : ${usuarios}">
+                                    <td th:text="${usuario.id}">1</td>
+                                    <td>
+                                        <div class="d-flex align-items-center">
+                                            <div class="user-avatar me-2" style="width:35px;height:35px;font-size:0.9rem;"
+                                                 th:text="${usuario.nombre.substring(0,1).toUpperCase()}">U</div>
+                                            <span th:text="${usuario.nombre}">Nombre</span>
+                                        </div>
+                                    </td>
+                                    <td>
+                                        <code th:text="${usuario.username}">username</code>
+                                    </td>
+                                    <td>
+                                        <span th:if="${usuario.rol.name() == 'ADMIN'}" class="badge badge-admin">
+                                            <i class="bi bi-shield-check me-1"></i>Administrador
+                                        </span>
+                                        <span th:if="${usuario.rol.name() == 'EMPLEADO'}" class="badge badge-empleado">
+                                            <i class="bi bi-person me-1"></i>Empleado
+                                        </span>
+                                    </td>
+                                    <td th:text="${#temporals.format(usuario.fechaRegistro, 'dd/MM/yyyy')}">01/01/2024</td>
+                                    <td class="text-center">
+                                        <div class="btn-group">
+                                            <a th:href="@{/usuarios/ver/{id}(id=${usuario.id})}" 
+                                               class="btn btn-sm btn-outline-primary" 
+                                               data-bs-toggle="tooltip" title="Ver detalles">
+                                                <i class="bi bi-eye"></i>
+                                            </a>
+                                            <a th:href="@{/usuarios/editar/{id}(id=${usuario.id})}" 
+                                               class="btn btn-sm btn-outline-warning"
+                                               data-bs-toggle="tooltip" title="Editar">
+                                                <i class="bi bi-pencil"></i>
+                                            </a>
+                                            <form th:action="@{/usuarios/eliminar/{id}(id=${usuario.id})}" 
+                                                  method="post" style="display:inline;">
+                                                <button type="submit" class="btn btn-sm btn-outline-danger"
+                                                        th:data-confirm-delete="${usuario.nombre}"
+                                                        data-bs-toggle="tooltip" title="Eliminar">
+                                                    <i class="bi bi-trash"></i>
+                                                </button>
+                                            </form>
+                                        </div>
+                                    </td>
+                                </tr>
+                                <tr th:if="${#lists.isEmpty(usuarios)}">
+                                    <td colspan="6" class="text-center py-4">
+                                        <div th:replace="~{fragments/footer :: sin-resultados}"></div>
+                                    </td>
+                                </tr>
+                            </tbody>
+                        </table>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+    
+    <!-- Scripts -->
+    <div th:replace="~{fragments/footer :: scripts}"></div>
+</body>
+</html>

@@ -1,0 +1,88 @@
+<!DOCTYPE html>
+<html xmlns:th="http://www.thymeleaf.org" lang="es">
+<head th:replace="~{fragments/footer :: head('Detalle Usuario')}">
+    <title>Usuario - BiblioTech</title>
+</head>
+<body>
+    <div class="wrapper">
+        <!-- Sidebar -->
+        <div th:replace="~{fragments/sidebar :: sidebar}"></div>
+        
+        <!-- Contenido Principal -->
+        <div class="main-content">
+            <!-- Header -->
+            <header th:replace="~{fragments/header :: header}" th:with="pageTitle='Detalle de Usuario'"></header>
+            
+            <!-- Contenido de la Página -->
+            <div class="page-content">
+                <div class="row justify-content-center">
+                    <div class="col-lg-8">
+                        <div class="card-custom card">
+                            <div class="card-header d-flex justify-content-between align-items-center">
+                                <span><i class="bi bi-person-gear me-2"></i>Información del Usuario</span>
+                                <span th:if="${usuario.rol.name() == 'ADMIN'}" class="badge badge-admin">Administrador</span>
+                                <span th:if="${usuario.rol.name() == 'EMPLEADO'}" class="badge badge-empleado">Empleado</span>
+                            </div>
+                            <div class="card-body">
+                                <!-- Avatar y nombre -->
+                                <div class="text-center mb-4">
+                                    <div class="user-avatar mx-auto mb-3" style="width:80px;height:80px;font-size:2rem;"
+                                         th:text="${usuario.nombre.substring(0,1).toUpperCase()}">U</div>
+                                    <h4 th:text="${usuario.nombre}">Nombre</h4>
+                                    <p class="text-muted">
+                                        <code th:text="'@' + ${usuario.username}">@username</code>
+                                    </p>
+                                </div>
+                                
+                                <hr>
+                                
+                                <!-- Detalles -->
+                                <div class="row">
+                                    <div class="col-md-6 mb-3">
+                                        <label class="text-muted small">ID</label>
+                                        <p class="mb-0 fw-bold" th:text="${usuario.id}">1</p>
+                                    </div>
+                                    <div class="col-md-6 mb-3">
+                                        <label class="text-muted small">Fecha de Registro</label>
+                                        <p class="mb-0 fw-bold" th:text="${#temporals.format(usuario.fechaRegistro, 'dd/MM/yyyy HH:mm')}">01/01/2024</p>
+                                    </div>
+                                    <div class="col-md-6 mb-3">
+                                        <label class="text-muted small">Rol</label>
+                                        <p class="mb-0" th:text="${usuario.rolDescripcion}">Rol</p>
+                                    </div>
+                                    <div class="col-md-6 mb-3">
+                                        <label class="text-muted small">Username</label>
+                                        <p class="mb-0 fw-bold" th:text="${usuario.username}">username</p>
+                                    </div>
+                                </div>
+                                
+                                <!-- Botones de acción -->
+                                <div class="d-flex justify-content-between mt-4 pt-3 border-top">
+                                    <a th:href="@{/usuarios}" class="btn btn-outline-secondary">
+                                        <i class="bi bi-arrow-left me-2"></i>Volver
+                                    </a>
+                                    <div>
+                                        <a th:href="@{/usuarios/editar/{id}(id=${usuario.id})}" class="btn btn-warning">
+                                            <i class="bi bi-pencil me-2"></i>Editar
+                                        </a>
+                                        <form th:action="@{/usuarios/eliminar/{id}(id=${usuario.id})}" 
+                                              method="post" style="display:inline;">
+                                            <button type="submit" class="btn btn-danger"
+                                                    th:data-confirm-delete="${usuario.nombre}">
+                                                <i class="bi bi-trash me-2"></i>Eliminar
+                                            </button>
+                                        </form>
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+    
+    <!-- Scripts -->
+    <div th:replace="~{fragments/footer :: scripts}"></div>
+</body>
+</html>

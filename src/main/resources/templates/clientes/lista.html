@@ -1,0 +1,213 @@
+<!DOCTYPE html>
+<html xmlns:th="http://www.thymeleaf.org" lang="es">
+<head th:replace="~{fragments/footer :: head('Clientes')}">
+    <title>Clientes - BiblioTech</title>
+</head>
+<body>
+    <div class="wrapper">
+        <!-- Sidebar -->
+        <div th:replace="~{fragments/sidebar :: sidebar}"></div>
+        
+        <!-- Contenido Principal -->
+        <div class="main-content">
+            <!-- Header -->
+            <header th:replace="~{fragments/header :: header}" th:with="pageTitle='Gestión de Clientes'"></header>
+            
+            <!-- Contenido de la Página -->
+            <div class="page-content">
+                <!-- Alertas -->
+                <div th:replace="~{fragments/footer :: alerts}"></div>
+                
+                <!-- Estadísticas -->
+                <div class="row g-4 mb-4">
+                    <div class="col-md-4">
+                        <div class="stat-card primary">
+                            <div class="d-flex justify-content-between align-items-center">
+                                <div>
+                                    <div class="stat-value" th:text="${totalClientes}">0</div>
+                                    <div class="stat-label">Total Clientes</div>
+                                </div>
+                                <i class="bi bi-people stat-icon"></i>
+                            </div>
+                        </div>
+                    </div>
+                    <div class="col-md-4">
+                        <div class="stat-card success">
+                            <div class="d-flex justify-content-between align-items-center">
+                                <div>
+                                    <div class="stat-value" th:text="${clientesActivos}">0</div>
+                                    <div class="stat-label">Activos</div>
+                                </div>
+                                <i class="bi bi-person-check stat-icon"></i>
+                            </div>
+                        </div>
+                    </div>
+                    <div class="col-md-4">
+                        <div class="stat-card danger">
+                            <div class="d-flex justify-content-between align-items-center">
+                                <div>
+                                    <div class="stat-value" th:text="${clientesInactivos}">0</div>
+                                    <div class="stat-label">Inactivos</div>
+                                </div>
+                                <i class="bi bi-person-x stat-icon"></i>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+                
+                <!-- Filtros y Búsqueda -->
+                <div class="filter-bar">
+                    <div class="row g-3 align-items-center">
+                        <div class="col-md-5">
+                            <form th:action="@{/clientes}" method="get" class="search-box">
+                                <i class="bi bi-search"></i>
+                                <input type="text" 
+                                       class="form-control" 
+                                       name="busqueda"
+                                       th:value="${busqueda}"
+                                       placeholder="Buscar por nombre, apellido o DNI...">
+                            </form>
+                        </div>
+                        <div class="col-md-4">
+                            <div class="btn-group w-100">
+                                <a th:href="@{/clientes}" 
+                                   class="btn"
+                                   th:classappend="${filtroActual == null} ? 'btn-primary' : 'btn-outline-primary'">
+                                    Todos
+                                </a>
+                                <a th:href="@{/clientes(filtro='activos')}" 
+                                   class="btn"
+                                   th:classappend="${filtroActual == 'activos'} ? 'btn-success' : 'btn-outline-success'">
+                                    Activos
+                                </a>
+                                <a th:href="@{/clientes(filtro='inactivos')}" 
+                                   class="btn"
+                                   th:classappend="${filtroActual == 'inactivos'} ? 'btn-danger' : 'btn-outline-danger'">
+                                    Inactivos
+                                </a>
+                                <a th:href="@{/clientes(filtro='vencidos')}" 
+                                   class="btn"
+                                   th:classappend="${filtroActual == 'vencidos'} ? 'btn-warning' : 'btn-outline-warning'">
+                                    Con Mora
+                                </a>
+                            </div>
+                        </div>
+                        <div class="col-md-3 text-end">
+                            <a th:href="@{/clientes/nuevo}" class="btn btn-primary w-100">
+                                <i class="bi bi-plus-circle me-2"></i>Nuevo Cliente
+                            </a>
+                        </div>
+                    </div>
+                </div>
+                
+                <!-- Tabla de Clientes -->
+                <div class="table-container">
+                    <div class="table-responsive">
+                        <table class="table table-custom mb-0">
+                            <thead>
+                                <tr>
+                                    <th>DNI</th>
+                                    <th>Nombre Completo</th>
+                                    <th>Email</th>
+                                    <th>Teléfono</th>
+                                    <th>Estado</th>
+                                    <th class="text-center">Préstamos</th>
+                                    <th class="text-center">Acciones</th>
+                                </tr>
+                            </thead>
+                            <tbody>
+                                <tr th:each="cliente : ${clientes}">
+                                    <td>
+                                        <code th:text="${cliente.dni}">12345678</code>
+                                    </td>
+                                    <td>
+                                        <div class="d-flex align-items-center">
+                                            <div class="user-avatar me-2" 
+                                                 style="width:35px;height:35px;font-size:0.9rem;"
+                                                 th:style="${cliente.activo} ? 'background-color: var(--success-color)' : 'background-color: var(--danger-color)'"
+                                                 th:text="${cliente.nombre.substring(0,1).toUpperCase()}">C</div>
+                                            <div>
+                                                <span th:text="${cliente.nombreCompleto}">Nombre</span>
+                                                <span th:if="${cliente.prestamosVencidos > 0}" 
+                                                      class="badge badge-danger ms-2">
+                                                    <i class="bi bi-exclamation-triangle"></i>
+                                                </span>
+                                            </div>
+                                        </div>
+                                    </td>
+                                    <td th:text="${cliente.email} ?: '-'">email@example.com</td>
+                                    <td th:text="${cliente.telefono} ?: '-'">999999999</td>
+                                    <td>
+                                        <span th:if="${cliente.activo}" class="badge badge-activo">
+                                            <i class="bi bi-check-circle me-1"></i>Activo
+                                        </span>
+                                        <span th:unless="${cliente.activo}" class="badge badge-inactivo">
+                                            <i class="bi bi-x-circle me-1"></i>Inactivo
+                                        </span>
+                                    </td>
+                                    <td class="text-center">
+                                        <span class="badge bg-primary" th:text="${cliente.prestamosActivos}">0</span>
+                                        <small class="text-muted">activos</small>
+                                        <span th:if="${cliente.prestamosVencidos > 0}" class="badge bg-danger ms-1" 
+                                              th:text="${cliente.prestamosVencidos}">0</span>
+                                        <small th:if="${cliente.prestamosVencidos > 0}" class="text-danger">vencidos</small>
+                                    </td>
+                                    <td class="text-center">
+                                        <div class="btn-group">
+                                            <a th:href="@{/clientes/ver/{id}(id=${cliente.id})}" 
+                                               class="btn btn-sm btn-outline-primary"
+                                               data-bs-toggle="tooltip" title="Ver detalles">
+                                                <i class="bi bi-eye"></i>
+                                            </a>
+                                            <a th:href="@{/clientes/editar/{id}(id=${cliente.id})}" 
+                                               class="btn btn-sm btn-outline-warning"
+                                               data-bs-toggle="tooltip" title="Editar">
+                                                <i class="bi bi-pencil"></i>
+                                            </a>
+                                            <!-- Nuevo préstamo (solo si puede prestar) -->
+                                            <a th:if="${cliente.puedePrestar}" 
+                                               th:href="@{/prestamos/nuevo(clienteId=${cliente.id})}"
+                                               class="btn btn-sm btn-outline-success"
+                                               data-bs-toggle="tooltip" title="Nuevo préstamo">
+                                                <i class="bi bi-plus-lg"></i>
+                                            </a>
+                                            <!-- Activar/Desactivar -->
+                                            <form th:if="${cliente.activo}" 
+                                                  th:action="@{/clientes/desactivar/{id}(id=${cliente.id})}" 
+                                                  method="post" style="display:inline;">
+                                                <button type="submit" 
+                                                        class="btn btn-sm btn-outline-danger"
+                                                        th:data-confirm-deactivate="${cliente.nombreCompleto}"
+                                                        data-bs-toggle="tooltip" title="Desactivar">
+                                                    <i class="bi bi-person-dash"></i>
+                                                </button>
+                                            </form>
+                                            <form th:unless="${cliente.activo}" 
+                                                  th:action="@{/clientes/activar/{id}(id=${cliente.id})}" 
+                                                  method="post" style="display:inline;">
+                                                <button type="submit" 
+                                                        class="btn btn-sm btn-outline-success"
+                                                        data-bs-toggle="tooltip" title="Activar">
+                                                    <i class="bi bi-person-check"></i>
+                                                </button>
+                                            </form>
+                                        </div>
+                                    </td>
+                                </tr>
+                                <tr th:if="${#lists.isEmpty(clientes)}">
+                                    <td colspan="7">
+                                        <div th:replace="~{fragments/footer :: sin-resultados}"></div>
+                                    </td>
+                                </tr>
+                            </tbody>
+                        </table>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+    
+    <!-- Scripts -->
+    <div th:replace="~{fragments/footer :: scripts}"></div>
+</body>
+</html>

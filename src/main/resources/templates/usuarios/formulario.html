@@ -1,0 +1,194 @@
+<!DOCTYPE html>
+<html xmlns:th="http://www.thymeleaf.org" lang="es">
+<head th:replace="~{fragments/footer :: head(${titulo})}">
+    <title>Usuario - BiblioTech</title>
+</head>
+<body>
+    <div class="wrapper">
+        <!-- Sidebar -->
+        <div th:replace="~{fragments/sidebar :: sidebar}"></div>
+        
+        <!-- Contenido Principal -->
+        <div class="main-content">
+            <!-- Header -->
+            <header th:replace="~{fragments/header :: header}" th:with="pageTitle=${titulo}"></header>
+            
+            <!-- Contenido de la Página -->
+            <div class="page-content">
+                <!-- Alertas -->
+                <div th:replace="~{fragments/footer :: alerts}"></div>
+                
+                <div class="row justify-content-center">
+                    <div class="col-lg-8">
+                        <div class="form-container">
+                            <div class="form-header">
+                                <h4>
+                                    <i class="bi bi-person-gear me-2"></i>
+                                    <span th:text="${titulo}">Formulario Usuario</span>
+                                </h4>
+                                <p class="text-muted mb-0" th:if="${esNuevo}">Complete los datos para registrar un nuevo usuario</p>
+                                <p class="text-muted mb-0" th:unless="${esNuevo}">Modifique los datos del usuario</p>
+                            </div>
+                            
+                            <!-- Formulario -->
+                            <form th:action="${esNuevo} ? @{/usuarios/nuevo} : @{/usuarios/editar/{id}(id=${usuarioId})}"
+                                  th:object="${usuarioRequest}"
+                                  method="post"
+                                  class="needs-validation"
+                                  novalidate>
+                                
+                                <div class="row g-3">
+                                    <!-- Nombre -->
+                                    <div class="col-md-6">
+                                        <label for="nombre" class="form-label">
+                                            Nombre Completo <span class="text-danger">*</span>
+                                        </label>
+                                        <div class="input-group">
+                                            <span class="input-group-text"><i class="bi bi-person"></i></span>
+                                            <input type="text" 
+                                                   class="form-control" 
+                                                   id="nombre"
+                                                   th:field="*{nombre}"
+                                                   th:classappend="${#fields.hasErrors('nombre')} ? 'is-invalid' : ''"
+                                                   placeholder="Ingrese nombre completo"
+                                                   required>
+                                            <div class="invalid-feedback" th:if="${#fields.hasErrors('nombre')}" th:errors="*{nombre}">
+                                                Error
+                                            </div>
+                                        </div>
+                                    </div>
+                                    
+                                    <!-- Username -->
+                                    <div class="col-md-6">
+                                        <label for="username" class="form-label">
+                                            Username <span class="text-danger">*</span>
+                                        </label>
+                                        <div class="input-group">
+                                            <span class="input-group-text"><i class="bi bi-at"></i></span>
+                                            <input type="text" 
+                                                   class="form-control" 
+                                                   id="username"
+                                                   th:field="*{username}"
+                                                   th:classappend="${#fields.hasErrors('username')} ? 'is-invalid' : ''"
+                                                   placeholder="Nombre de usuario"
+                                                   required>
+                                            <div class="invalid-feedback" th:if="${#fields.hasErrors('username')}" th:errors="*{username}">
+                                                Error
+                                            </div>
+                                        </div>
+                                        <small class="text-muted">Sin espacios ni caracteres especiales</small>
+                                    </div>
+                                    
+                                    <!-- Password -->
+                                    <div class="col-md-6">
+                                        <label for="password" class="form-label">
+                                            Contraseña 
+                                            <span class="text-danger" th:if="${esNuevo}">*</span>
+                                            <span th:unless="${esNuevo}" class="text-muted">(dejar vacío para mantener)</span>
+                                        </label>
+                                        <div class="input-group">
+                                            <span class="input-group-text"><i class="bi bi-lock"></i></span>
+                                            <input type="password" 
+                                                   class="form-control" 
+                                                   id="password"
+                                                   th:field="*{password}"
+                                                   th:classappend="${#fields.hasErrors('password')} ? 'is-invalid' : ''"
+                                                   placeholder="Ingrese contraseña"
+                                                   th:required="${esNuevo}">
+                                            <button class="btn btn-outline-secondary" type="button" onclick="togglePassword('password')">
+                                                <i class="bi bi-eye" id="toggleIconPassword"></i>
+                                            </button>
+                                            <div class="invalid-feedback" th:if="${#fields.hasErrors('password')}" th:errors="*{password}">
+                                                Error
+                                            </div>
+                                        </div>
+                                    </div>
+                                    
+                                    <!-- Rol -->
+                                    <div class="col-md-6">
+                                        <label for="rol" class="form-label">
+                                            Rol <span class="text-danger">*</span>
+                                        </label>
+                                        <div class="input-group">
+                                            <span class="input-group-text"><i class="bi bi-shield"></i></span>
+                                            <select class="form-select" 
+                                                    id="rol"
+                                                    th:field="*{rol}"
+                                                    th:classappend="${#fields.hasErrors('rol')} ? 'is-invalid' : ''"
+                                                    required>
+                                                <option value="">Seleccione un rol...</option>
+                                                <option th:each="r : ${roles}" 
+                                                        th:value="${r}" 
+                                                        th:text="${r.name() == 'ADMIN'} ? 'Administrador' : 'Empleado'">
+                                                    Rol
+                                                </option>
+                                            </select>
+                                            <div class="invalid-feedback" th:if="${#fields.hasErrors('rol')}" th:errors="*{rol}">
+                                                Error
+                                            </div>
+                                        </div>
+                                    </div>
+                                </div>
+                                
+                                <!-- Información de roles -->
+                                <div class="alert alert-info mt-4">
+                                    <h6 class="alert-heading"><i class="bi bi-info-circle me-2"></i>Permisos por Rol</h6>
+                                    <hr>
+                                    <div class="row">
+                                        <div class="col-md-6">
+                                            <strong><i class="bi bi-shield-check me-1"></i>Administrador:</strong>
+                                            <ul class="mb-0 small">
+                                                <li>Acceso completo al sistema</li>
+                                                <li>Gestión de usuarios</li>
+                                                <li>Reportes y estadísticas</li>
+                                            </ul>
+                                        </div>
+                                        <div class="col-md-6">
+                                            <strong><i class="bi bi-person me-1"></i>Empleado:</strong>
+                                            <ul class="mb-0 small">
+                                                <li>Gestión de préstamos</li>
+                                                <li>Gestión de clientes</li>
+                                                <li>Consulta de libros</li>
+                                            </ul>
+                                        </div>
+                                    </div>
+                                </div>
+                                
+                                <!-- Botones -->
+                                <div class="d-flex justify-content-between mt-4 pt-3 border-top">
+                                    <a th:href="@{/usuarios}" class="btn btn-outline-secondary">
+                                        <i class="bi bi-arrow-left me-2"></i>Cancelar
+                                    </a>
+                                    <button type="submit" class="btn btn-primary">
+                                        <i class="bi bi-check-lg me-2"></i>
+                                        <span th:text="${esNuevo} ? 'Crear Usuario' : 'Guardar Cambios'">Guardar</span>
+                                    </button>
+                                </div>
+                            </form>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+    
+    <!-- Scripts -->
+    <div th:replace="~{fragments/footer :: scripts}"></div>
+    <script>
+        function togglePassword(inputId) {
+            const input = document.getElementById(inputId);
+            const icon = document.getElementById('toggleIcon' + inputId.charAt(0).toUpperCase() + inputId.slice(1));
+            
+            if (input.type === 'password') {
+                input.type = 'text';
+                icon.classList.remove('bi-eye');
+                icon.classList.add('bi-eye-slash');
+            } else {
+                input.type = 'password';
+                icon.classList.remove('bi-eye-slash');
+                icon.classList.add('bi-eye');
+            }
+        }
+    </script>
+</body>
+</html>

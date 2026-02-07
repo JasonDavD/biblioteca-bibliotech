@@ -1,0 +1,210 @@
+<!DOCTYPE html>
+<html xmlns:th="http://www.thymeleaf.org" lang="es">
+<head th:replace="~{fragments/footer :: head(${titulo})}">
+    <title>Cliente - BiblioTech</title>
+</head>
+<body>
+    <div class="wrapper">
+        <!-- Sidebar -->
+        <div th:replace="~{fragments/sidebar :: sidebar}"></div>
+        
+        <!-- Contenido Principal -->
+        <div class="main-content">
+            <!-- Header -->
+            <header th:replace="~{fragments/header :: header}" th:with="pageTitle=${titulo}"></header>
+            
+            <!-- Contenido de la Página -->
+            <div class="page-content">
+                <!-- Alertas -->
+                <div th:replace="~{fragments/footer :: alerts}"></div>
+                
+                <div class="row justify-content-center">
+                    <div class="col-lg-10">
+                        <div class="form-container">
+                            <div class="form-header">
+                                <h4>
+                                    <i class="bi bi-person me-2"></i>
+                                    <span th:text="${titulo}">Formulario Cliente</span>
+                                </h4>
+                                <p class="text-muted mb-0" th:if="${esNuevo}">Complete los datos para registrar un nuevo cliente</p>
+                                <p class="text-muted mb-0" th:unless="${esNuevo}">Modifique los datos del cliente</p>
+                            </div>
+                            
+                            <!-- Formulario -->
+                            <form th:action="${esNuevo} ? @{/clientes/nuevo} : @{/clientes/editar/{id}(id=${clienteId})}"
+                                  th:object="${clienteRequest}"
+                                  method="post"
+                                  class="needs-validation"
+                                  novalidate>
+                                
+                                <!-- Datos Personales -->
+                                <h6 class="text-muted mb-3">
+                                    <i class="bi bi-person-vcard me-2"></i>Datos Personales
+                                </h6>
+                                <div class="row g-3 mb-4">
+                                    <!-- DNI -->
+                                    <div class="col-md-4">
+                                        <label for="dni" class="form-label">
+                                            DNI <span class="text-danger">*</span>
+                                        </label>
+                                        <div class="input-group">
+                                            <span class="input-group-text"><i class="bi bi-card-text"></i></span>
+                                            <input type="text" 
+                                                   class="form-control" 
+                                                   id="dni"
+                                                   th:field="*{dni}"
+                                                   th:classappend="${#fields.hasErrors('dni')} ? 'is-invalid' : ''"
+                                                   placeholder="8 dígitos"
+                                                   maxlength="8"
+                                                   pattern="[0-9]{8}"
+                                                   required>
+                                            <div class="invalid-feedback" th:if="${#fields.hasErrors('dni')}" th:errors="*{dni}">
+                                                Error
+                                            </div>
+                                        </div>
+                                    </div>
+                                    
+                                    <!-- Nombre -->
+                                    <div class="col-md-4">
+                                        <label for="nombre" class="form-label">
+                                            Nombre <span class="text-danger">*</span>
+                                        </label>
+                                        <input type="text" 
+                                               class="form-control" 
+                                               id="nombre"
+                                               th:field="*{nombre}"
+                                               th:classappend="${#fields.hasErrors('nombre')} ? 'is-invalid' : ''"
+                                               placeholder="Nombre(s)"
+                                               required>
+                                        <div class="invalid-feedback" th:if="${#fields.hasErrors('nombre')}" th:errors="*{nombre}">
+                                            Error
+                                        </div>
+                                    </div>
+                                    
+                                    <!-- Apellido -->
+                                    <div class="col-md-4">
+                                        <label for="apellido" class="form-label">
+                                            Apellido <span class="text-danger">*</span>
+                                        </label>
+                                        <input type="text" 
+                                               class="form-control" 
+                                               id="apellido"
+                                               th:field="*{apellido}"
+                                               th:classappend="${#fields.hasErrors('apellido')} ? 'is-invalid' : ''"
+                                               placeholder="Apellido(s)"
+                                               required>
+                                        <div class="invalid-feedback" th:if="${#fields.hasErrors('apellido')}" th:errors="*{apellido}">
+                                            Error
+                                        </div>
+                                    </div>
+                                </div>
+                                
+                                <!-- Datos de Contacto -->
+                                <h6 class="text-muted mb-3">
+                                    <i class="bi bi-telephone me-2"></i>Datos de Contacto
+                                </h6>
+                                <div class="row g-3 mb-4">
+                                    <!-- Email -->
+                                    <div class="col-md-6">
+                                        <label for="email" class="form-label">Email</label>
+                                        <div class="input-group">
+                                            <span class="input-group-text"><i class="bi bi-envelope"></i></span>
+                                            <input type="email" 
+                                                   class="form-control" 
+                                                   id="email"
+                                                   th:field="*{email}"
+                                                   th:classappend="${#fields.hasErrors('email')} ? 'is-invalid' : ''"
+                                                   placeholder="correo@ejemplo.com">
+                                            <div class="invalid-feedback" th:if="${#fields.hasErrors('email')}" th:errors="*{email}">
+                                                Error
+                                            </div>
+                                        </div>
+                                    </div>
+                                    
+                                    <!-- Teléfono -->
+                                    <div class="col-md-6">
+                                        <label for="telefono" class="form-label">Teléfono</label>
+                                        <div class="input-group">
+                                            <span class="input-group-text"><i class="bi bi-phone"></i></span>
+                                            <input type="text" 
+                                                   class="form-control" 
+                                                   id="telefono"
+                                                   th:field="*{telefono}"
+                                                   th:classappend="${#fields.hasErrors('telefono')} ? 'is-invalid' : ''"
+                                                   placeholder="999 999 999">
+                                            <div class="invalid-feedback" th:if="${#fields.hasErrors('telefono')}" th:errors="*{telefono}">
+                                                Error
+                                            </div>
+                                        </div>
+                                    </div>
+                                    
+                                    <!-- Dirección -->
+                                    <div class="col-12">
+                                        <label for="direccion" class="form-label">Dirección</label>
+                                        <div class="input-group">
+                                            <span class="input-group-text"><i class="bi bi-geo-alt"></i></span>
+                                            <input type="text" 
+                                                   class="form-control" 
+                                                   id="direccion"
+                                                   th:field="*{direccion}"
+                                                   th:classappend="${#fields.hasErrors('direccion')} ? 'is-invalid' : ''"
+                                                   placeholder="Av. Principal 123, Distrito">
+                                            <div class="invalid-feedback" th:if="${#fields.hasErrors('direccion')}" th:errors="*{direccion}">
+                                                Error
+                                            </div>
+                                        </div>
+                                    </div>
+                                </div>
+                                
+                                <!-- Estado (solo en edición) -->
+                                <div th:unless="${esNuevo}" class="mb-4">
+                                    <h6 class="text-muted mb-3">
+                                        <i class="bi bi-toggle-on me-2"></i>Estado del Cliente
+                                    </h6>
+                                    <div class="form-check form-switch">
+                                        <input class="form-check-input" 
+                                               type="checkbox" 
+                                               role="switch" 
+                                               id="activo"
+                                               th:field="*{activo}">
+                                        <label class="form-check-label" for="activo">
+                                            Cliente Activo
+                                        </label>
+                                    </div>
+                                    <small class="text-muted">Los clientes inactivos no pueden realizar préstamos</small>
+                                </div>
+                                
+                                <!-- Información -->
+                                <div class="alert alert-info">
+                                    <i class="bi bi-info-circle me-2"></i>
+                                    <strong>Nota:</strong> Cada cliente puede tener un máximo de 3 préstamos activos simultáneos.
+                                </div>
+                                
+                                <!-- Botones -->
+                                <div class="d-flex justify-content-between mt-4 pt-3 border-top">
+                                    <a th:href="@{/clientes}" class="btn btn-outline-secondary">
+                                        <i class="bi bi-arrow-left me-2"></i>Cancelar
+                                    </a>
+                                    <button type="submit" class="btn btn-primary">
+                                        <i class="bi bi-check-lg me-2"></i>
+                                        <span th:text="${esNuevo} ? 'Registrar Cliente' : 'Guardar Cambios'">Guardar</span>
+                                    </button>
+                                </div>
+                            </form>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+    
+    <!-- Scripts -->
+    <div th:replace="~{fragments/footer :: scripts}"></div>
+    <script>
+        // Validar solo números en DNI
+        document.getElementById('dni').addEventListener('input', function(e) {
+            this.value = this.value.replace(/[^0-9]/g, '');
+        });
+    </script>
+</body>
+</html>
