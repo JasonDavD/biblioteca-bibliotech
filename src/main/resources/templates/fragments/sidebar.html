@@ -1,0 +1,103 @@
+<!DOCTYPE html>
+<html xmlns:th="http://www.thymeleaf.org" lang="es">
+
+<!-- Fragment: Sidebar -->
+<aside th:fragment="sidebar" class="sidebar">
+    <!-- Header del Sidebar -->
+    <div class="sidebar-header">
+        <i class="bi bi-book-half logo-icon"></i>
+        <h3>BiblioTech</h3>
+    </div>
+    
+    <!-- Menú de Navegación -->
+    <ul class="sidebar-menu">
+        <!-- Dashboard -->
+        <li>
+            <a th:href="@{/dashboard}" th:classappend="${#strings.contains(#httpServletRequest.requestURI, '/dashboard')} ? 'active' : ''">
+                <i class="bi bi-speedometer2"></i>
+                <span>Dashboard</span>
+            </a>
+        </li>
+        
+        <!-- Sección: Gestión de Biblioteca -->
+        <li class="menu-header">Biblioteca</li>
+        
+        <li>
+            <a th:href="@{/libros}" th:classappend="${#strings.contains(#httpServletRequest.requestURI, '/libros')} ? 'active' : ''">
+                <i class="bi bi-book"></i>
+                <span>Libros</span>
+            </a>
+        </li>
+        
+        <li>
+            <a th:href="@{/autores}" th:classappend="${#strings.contains(#httpServletRequest.requestURI, '/autores')} ? 'active' : ''">
+                <i class="bi bi-person-badge"></i>
+                <span>Autores</span>
+            </a>
+        </li>
+        
+        <li>
+            <a th:href="@{/categorias}" th:classappend="${#strings.contains(#httpServletRequest.requestURI, '/categorias')} ? 'active' : ''">
+                <i class="bi bi-tags"></i>
+                <span>Categorías</span>
+            </a>
+        </li>
+        
+        <!-- Sección: Préstamos -->
+        <li class="menu-header">Préstamos</li>
+        
+        <li>
+            <a th:href="@{/prestamos}" th:classappend="${#strings.contains(#httpServletRequest.requestURI, '/prestamos')} ? 'active' : ''">
+                <i class="bi bi-arrow-left-right"></i>
+                <span>Préstamos</span>
+            </a>
+        </li>
+        
+        <li>
+            <a th:href="@{/prestamos/nuevo}">
+                <i class="bi bi-plus-circle"></i>
+                <span>Nuevo Préstamo</span>
+            </a>
+        </li>
+        
+        <!-- Sección: Clientes -->
+        <li class="menu-header">Clientes</li>
+        
+        <li>
+            <a th:href="@{/clientes}" th:classappend="${#strings.contains(#httpServletRequest.requestURI, '/clientes')} ? 'active' : ''">
+                <i class="bi bi-people"></i>
+                <span>Clientes</span>
+            </a>
+        </li>
+        
+        <!-- Sección: Administración (Solo ADMIN) -->
+        <th:block th:if="${esAdmin}">
+            <li class="menu-header">Administración</li>
+            
+            <li>
+                <a th:href="@{/usuarios}" th:classappend="${#strings.contains(#httpServletRequest.requestURI, '/usuarios')} ? 'active' : ''">
+                    <i class="bi bi-person-gear"></i>
+                    <span>Usuarios</span>
+                </a>
+            </li>
+            
+            <li>
+                <a th:href="@{/reportes}" th:classappend="${#strings.contains(#httpServletRequest.requestURI, '/reportes')} ? 'active' : ''">
+                    <i class="bi bi-file-earmark-bar-graph"></i>
+                    <span>Reportes</span>
+                </a>
+            </li>
+        </th:block>
+        
+        <!-- Cerrar Sesión -->
+        <li class="menu-header">Sesión</li>
+        <li>
+            <a th:href="@{/logout}" class="text-danger">
+                <i class="bi bi-box-arrow-left"></i>
+                <span>Cerrar Sesión</span>
+            </a>
+        </li>
+    </ul>
+</aside>
+
+</html>

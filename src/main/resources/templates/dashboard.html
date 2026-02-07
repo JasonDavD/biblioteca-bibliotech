@@ -1,0 +1,297 @@
+<!DOCTYPE html>
+<html xmlns:th="http://www.thymeleaf.org" lang="es">
+<head th:replace="~{fragments/footer :: head('Dashboard')}">
+    <title>Dashboard - BiblioTech</title>
+</head>
+<body>
+    <div class="wrapper">
+        <!-- Sidebar -->
+        <div th:replace="~{fragments/sidebar :: sidebar}"></div>
+        
+        <!-- Contenido Principal -->
+        <div class="main-content">
+            <!-- Header -->
+            <div th:replace="~{fragments/header :: header}"></div>
+            
+            <!-- Contenido de la Página -->
+            <div class="page-content">
+                <!-- Alertas -->
+                <div th:replace="~{fragments/footer :: alerts}"></div>
+                
+                <!-- Título de bienvenida -->
+                <div class="mb-4">
+                    <h4 class="text-muted">
+                        <i class="bi bi-sun me-2"></i>
+                        ¡Bienvenido, <span th:text="${usuarioLogueado?.nombre}">Usuario</span>!
+                    </h4>
+                    <p class="text-muted mb-0">Resumen general del sistema de biblioteca</p>
+                </div>
+                
+                <!-- Tarjetas de Estadísticas -->
+                <div class="row g-4 mb-4">
+                    <!-- Total Libros -->
+                    <div class="col-md-6 col-lg-3">
+                        <div class="stat-card primary">
+                            <div class="d-flex justify-content-between align-items-start">
+                                <div>
+                                    <div class="stat-value" th:text="${totalLibros}">0</div>
+                                    <div class="stat-label">Títulos Registrados</div>
+                                </div>
+                                <i class="bi bi-book stat-icon"></i>
+                            </div>
+                            <div class="mt-3">
+                                <small class="text-muted">
+                                    <span th:text="${totalEjemplares}">0</span> ejemplares en total
+                                </small>
+                            </div>
+                        </div>
+                    </div>
+                    
+                    <!-- Ejemplares Disponibles -->
+                    <div class="col-md-6 col-lg-3">
+                        <div class="stat-card success">
+                            <div class="d-flex justify-content-between align-items-start">
+                                <div>
+                                    <div class="stat-value" th:text="${ejemplaresDisponibles}">0</div>
+                                    <div class="stat-label">Ejemplares Disponibles</div>
+                                </div>
+                                <i class="bi bi-check-circle stat-icon"></i>
+                            </div>
+                            <div class="mt-3">
+                                <small class="text-muted">
+                                    Listos para préstamo
+                                </small>
+                            </div>
+                        </div>
+                    </div>
+                    
+                    <!-- Préstamos Activos -->
+                    <div class="col-md-6 col-lg-3">
+                        <div class="stat-card warning">
+                            <div class="d-flex justify-content-between align-items-start">
+                                <div>
+                                    <div class="stat-value" th:text="${prestamosActivos}">0</div>
+                                    <div class="stat-label">Préstamos Activos</div>
+                                </div>
+                                <i class="bi bi-arrow-left-right stat-icon"></i>
+                            </div>
+                            <div class="mt-3">
+                                <small class="text-muted">
+                                    <span th:text="${prestamosHoy}">0</span> realizados hoy
+                                </small>
+                            </div>
+                        </div>
+                    </div>
+                    
+                    <!-- Préstamos Vencidos -->
+                    <div class="col-md-6 col-lg-3">
+                        <div class="stat-card danger">
+                            <div class="d-flex justify-content-between align-items-start">
+                                <div>
+                                    <div class="stat-value" th:text="${prestamosVencidos}">0</div>
+                                    <div class="stat-label">Préstamos Vencidos</div>
+                                </div>
+                                <i class="bi bi-exclamation-triangle stat-icon"></i>
+                            </div>
+                            <div class="mt-3">
+                                <a th:href="@{/prestamos?filtro=vencidos}" class="text-danger small">
+                                    Ver detalles <i class="bi bi-arrow-right"></i>
+                                </a>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+                
+                <!-- Segunda fila de estadísticas -->
+                <div class="row g-4 mb-4">
+                    <!-- Clientes -->
+                    <div class="col-md-6 col-lg-3">
+                        <div class="stat-card info">
+                            <div class="d-flex justify-content-between align-items-start">
+                                <div>
+                                    <div class="stat-value" th:text="${totalClientes}">0</div>
+                                    <div class="stat-label">Clientes Registrados</div>
+                                </div>
+                                <i class="bi bi-people stat-icon"></i>
+                            </div>
+                            <div class="mt-3">
+                                <small class="text-muted">
+                                    <span th:text="${clientesActivos}">0</span> activos
+                                </small>
+                            </div>
+                        </div>
+                    </div>
+                    
+                    <!-- Autores -->
+                    <div class="col-md-6 col-lg-3">
+                        <div class="stat-card primary">
+                            <div class="d-flex justify-content-between align-items-start">
+                                <div>
+                                    <div class="stat-value" th:text="${totalAutores}">0</div>
+                                    <div class="stat-label">Autores</div>
+                                </div>
+                                <i class="bi bi-person-badge stat-icon"></i>
+                            </div>
+                        </div>
+                    </div>
+                    
+                    <!-- Categorías -->
+                    <div class="col-md-6 col-lg-3">
+                        <div class="stat-card success">
+                            <div class="d-flex justify-content-between align-items-start">
+                                <div>
+                                    <div class="stat-value" th:text="${totalCategorias}">0</div>
+                                    <div class="stat-label">Categorías</div>
+                                </div>
+                                <i class="bi bi-tags stat-icon"></i>
+                            </div>
+                        </div>
+                    </div>
+                    
+                    <!-- Devoluciones Hoy -->
+                    <div class="col-md-6 col-lg-3">
+                        <div class="stat-card info">
+                            <div class="d-flex justify-content-between align-items-start">
+                                <div>
+                                    <div class="stat-value" th:text="${devolucionesHoy}">0</div>
+                                    <div class="stat-label">Devoluciones Hoy</div>
+                                </div>
+                                <i class="bi bi-box-arrow-in-left stat-icon"></i>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+                
+                <div class="row g-4">
+                    <!-- Préstamos por Vencer -->
+                    <div class="col-lg-6">
+                        <div class="table-container">
+                            <div class="table-header">
+                                <h5><i class="bi bi-clock-history me-2"></i>Préstamos por Vencer (3 días)</h5>
+                                <a th:href="@{/prestamos?filtro=porVencer}" class="btn btn-sm btn-outline-primary">
+                                    Ver todos
+                                </a>
+                            </div>
+                            <div class="table-responsive">
+                                <table class="table table-custom mb-0">
+                                    <thead>
+                                        <tr>
+                                            <th>Libro</th>
+                                            <th>Cliente</th>
+                                            <th>Vence</th>
+                                            <th>Acción</th>
+                                        </tr>
+                                    </thead>
+                                    <tbody>
+                                        <tr th:each="prestamo : ${prestamosPorVencer}" th:if="${#lists.size(prestamosPorVencer) > 0}">
+                                            <td th:text="${prestamo.tituloLibro}">Libro</td>
+                                            <td th:text="${prestamo.nombreCompletoCliente}">Cliente</td>
+                                            <td>
+                                                <span class="badge badge-warning" th:text="${prestamo.fechaDevolucionEsperada}">Fecha</span>
+                                            </td>
+                                            <td>
+                                                <a th:href="@{/prestamos/devolver/{id}(id=${prestamo.id})}" 
+                                                   class="btn btn-sm btn-success">
+                                                    <i class="bi bi-check-lg"></i>
+                                                </a>
+                                            </td>
+                                        </tr>
+                                        <tr th:if="${#lists.isEmpty(prestamosPorVencer)}">
+                                            <td colspan="4" class="text-center text-muted py-4">
+                                                <i class="bi bi-check-circle me-2"></i>No hay préstamos por vencer
+                                            </td>
+                                        </tr>
+                                    </tbody>
+                                </table>
+                            </div>
+                        </div>
+                    </div>
+                    
+                    <!-- Préstamos Vencidos (Alerta) -->
+                    <div class="col-lg-6">
+                        <div class="table-container" th:classappend="${#lists.size(prestamosVencidosList) > 0} ? 'border-danger' : ''">
+                            <div class="table-header">
+                                <h5 class="text-danger"><i class="bi bi-exclamation-triangle me-2"></i>Préstamos Vencidos</h5>
+                                <a th:href="@{/prestamos?filtro=vencidos}" class="btn btn-sm btn-outline-danger">
+                                    Ver todos
+                                </a>
+                            </div>
+                            <div class="table-responsive">
+                                <table class="table table-custom mb-0">
+                                    <thead>
+                                        <tr>
+                                            <th>Libro</th>
+                                            <th>Cliente</th>
+                                            <th>Días Retraso</th>
+                                            <th>Acción</th>
+                                        </tr>
+                                    </thead>
+                                    <tbody>
+                                        <tr th:each="prestamo : ${prestamosVencidosList}" th:if="${#lists.size(prestamosVencidosList) > 0}">
+                                            <td th:text="${prestamo.tituloLibro}">Libro</td>
+                                            <td th:text="${prestamo.nombreCompletoCliente}">Cliente</td>
+                                            <td>
+                                                <span class="badge badge-danger" th:text="${prestamo.diasRetraso} + ' días'">0 días</span>
+                                            </td>
+                                            <td>
+                                                <a th:href="@{/prestamos/devolver/{id}(id=${prestamo.id})}" 
+                                                   class="btn btn-sm btn-success">
+                                                    <i class="bi bi-check-lg"></i>
+                                                </a>
+                                            </td>
+                                        </tr>
+                                        <tr th:if="${#lists.isEmpty(prestamosVencidosList)}">
+                                            <td colspan="4" class="text-center text-muted py-4">
+                                                <i class="bi bi-emoji-smile me-2"></i>No hay préstamos vencidos
+                                            </td>
+                                        </tr>
+                                    </tbody>
+                                </table>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+                
+                <!-- Accesos Rápidos -->
+                <div class="row g-4 mt-4">
+                    <div class="col-12">
+                        <div class="card-custom card">
+                            <div class="card-header">
+                                <i class="bi bi-lightning me-2"></i>Acciones Rápidas
+                            </div>
+                            <div class="card-body">
+                                <div class="row g-3">
+                                    <div class="col-md-3">
+                                        <a th:href="@{/prestamos/nuevo}" class="btn btn-primary w-100 py-3">
+                                            <i class="bi bi-plus-circle me-2"></i>Nuevo Préstamo
+                                        </a>
+                                    </div>
+                                    <div class="col-md-3">
+                                        <a th:href="@{/clientes/nuevo}" class="btn btn-success w-100 py-3">
+                                            <i class="bi bi-person-plus me-2"></i>Nuevo Cliente
+                                        </a>
+                                    </div>
+                                    <div class="col-md-3">
+                                        <a th:href="@{/libros/nuevo}" class="btn btn-info w-100 py-3 text-white">
+                                            <i class="bi bi-book me-2"></i>Nuevo Libro
+                                        </a>
+                                    </div>
+                                    <div class="col-md-3">
+                                        <a th:href="@{/prestamos?filtro=vencidos}" class="btn btn-warning w-100 py-3">
+                                            <i class="bi bi-clock me-2"></i>Ver Vencidos
+                                        </a>
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+                
+            </div>
+        </div>
+    </div>
+    
+    <!-- Scripts -->
+    <div th:replace="~{fragments/footer :: scripts}"></div>
+</body>
+</html>

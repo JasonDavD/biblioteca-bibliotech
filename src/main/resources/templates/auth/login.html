@@ -1,0 +1,122 @@
+<!DOCTYPE html>
+<html xmlns:th="http://www.thymeleaf.org" lang="es">
+<head th:replace="~{fragments/footer :: head('Iniciar Sesión')}">
+    <title>Login - BiblioTech</title>
+</head>
+<body class="login-page">
+    
+    <div class="login-container">
+        <!-- Header -->
+        <div class="login-header">
+            <i class="bi bi-book-half logo-icon"></i>
+            <h2>BiblioTech</h2>
+            <p>Sistema de Gestión de Biblioteca</p>
+        </div>
+        
+        <!-- Alertas -->
+        <div th:if="${successMessage}" class="alert alert-success alert-dismissible fade show" role="alert">
+            <i class="bi bi-check-circle-fill me-2"></i>
+            <span th:text="${successMessage}">Mensaje</span>
+            <button type="button" class="btn-close" data-bs-dismiss="alert"></button>
+        </div>
+        
+        <div th:if="${errorMessage}" class="alert alert-danger alert-dismissible fade show" role="alert">
+            <i class="bi bi-exclamation-triangle-fill me-2"></i>
+            <span th:text="${errorMessage}">Error</span>
+            <button type="button" class="btn-close" data-bs-dismiss="alert"></button>
+        </div>
+        
+        <!-- Formulario de Login -->
+        <form th:action="@{/login}" th:object="${loginRequest}" method="post">
+            <!-- Username -->
+            <div class="mb-4">
+                <label for="username" class="form-label">
+                    <i class="bi bi-person me-2"></i>Usuario
+                </label>
+                <input type="text" 
+                       class="form-control form-control-lg" 
+                       id="username"
+                       th:field="*{username}"
+                       th:classappend="${#fields.hasErrors('username')} ? 'is-invalid' : ''"
+                       placeholder="Ingrese su usuario"
+                       autofocus
+                       required>
+                <div class="invalid-feedback" th:if="${#fields.hasErrors('username')}" th:errors="*{username}">
+                    Error en usuario
+                </div>
+            </div>
+            
+            <!-- Password -->
+            <div class="mb-4">
+                <label for="password" class="form-label">
+                    <i class="bi bi-lock me-2"></i>Contraseña
+                </label>
+                <div class="input-group">
+                    <input type="password" 
+                           class="form-control form-control-lg" 
+                           id="password"
+                           th:field="*{password}"
+                           th:classappend="${#fields.hasErrors('password')} ? 'is-invalid' : ''"
+                           placeholder="Ingrese su contraseña"
+                           required>
+                    <button class="btn btn-outline-secondary" type="button" onclick="togglePassword()">
+                        <i class="bi bi-eye" id="toggleIcon"></i>
+                    </button>
+                </div>
+                <div class="invalid-feedback" th:if="${#fields.hasErrors('password')}" th:errors="*{password}">
+                    Error en contraseña
+                </div>
+            </div>
+            
+            <!-- Botón de Login -->
+            <div class="d-grid gap-2 mt-4">
+                <button type="submit" class="btn btn-primary btn-lg">
+                    <i class="bi bi-box-arrow-in-right me-2"></i>Iniciar Sesión
+                </button>
+            </div>
+        </form>
+        
+        <!-- Footer del login -->
+        <div class="text-center mt-4">
+            <small class="text-muted">
+                <i class="bi bi-shield-lock me-1"></i>
+                Acceso solo para personal autorizado
+            </small>
+        </div>
+        
+        <!-- Credenciales de prueba (solo desarrollo) -->
+        <div class="mt-4 p-3 bg-light rounded">
+            <small class="text-muted d-block mb-2">
+                <i class="bi bi-info-circle me-1"></i>Credenciales de prueba:
+            </small>
+            <div class="row">
+                <div class="col-6">
+                    <small><strong>Admin:</strong><br>admin / admin123</small>
+                </div>
+                <div class="col-6">
+                    <small><strong>Empleado:</strong><br>empleado / 12345</small>
+                </div>
+            </div>
+        </div>
+    </div>
+    
+    <!-- Scripts -->
+    <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.2/dist/js/bootstrap.bundle.min.js"></script>
+    <script>
+        function togglePassword() {
+            const passwordInput = document.getElementById('password');
+            const toggleIcon = document.getElementById('toggleIcon');
+            
+            if (passwordInput.type === 'password') {
+                passwordInput.type = 'text';
+                toggleIcon.classList.remove('bi-eye');
+                toggleIcon.classList.add('bi-eye-slash');
+            } else {
+                passwordInput.type = 'password';
+                toggleIcon.classList.remove('bi-eye-slash');
+                toggleIcon.classList.add('bi-eye');
+            }
+        }
+    </script>
+</body>
+</html>

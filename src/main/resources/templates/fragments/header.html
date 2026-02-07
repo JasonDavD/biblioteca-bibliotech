@@ -1,0 +1,47 @@
+<!DOCTYPE html>
+<html xmlns:th="http://www.thymeleaf.org" lang="es">
+
+<!-- Fragment: Header/Top Bar -->
+<header th:fragment="header" class="top-header">
+    <div class="d-flex align-items-center">
+        <!-- Botón toggle sidebar (móvil) -->
+        <button class="btn btn-link d-lg-none me-3" id="sidebarToggle">
+            <i class="bi bi-list fs-4"></i>
+        </button>
+        <h1 class="page-title mb-0" th:text="${pageTitle} ?: 'Dashboard'">Dashboard</h1>
+    </div>
+    
+    <div class="user-info">
+        <div class="text-end me-3">
+            <div class="user-name" th:text="${usuarioLogueado?.nombre} ?: 'Usuario'">Usuario</div>
+            <div class="user-role">
+                <span th:if="${esAdmin}" class="badge badge-admin">Administrador</span>
+                <span th:unless="${esAdmin}" class="badge badge-empleado">Empleado</span>
+            </div>
+        </div>
+        <div class="user-avatar" th:text="${usuarioLogueado?.nombre != null ? usuarioLogueado.nombre.substring(0,1).toUpperCase() : 'U'}">U</div>
+        
+        <!-- Dropdown de usuario -->
+        <div class="dropdown ms-2">
+            <button class="btn btn-link dropdown-toggle" type="button" data-bs-toggle="dropdown">
+                <i class="bi bi-chevron-down"></i>
+            </button>
+            <ul class="dropdown-menu dropdown-menu-end">
+                <li>
+                    <span class="dropdown-item-text">
+                        <strong th:text="${usuarioLogueado?.nombre}">Usuario</strong><br>
+                        <small class="text-muted" th:text="${usuarioLogueado?.username}">username</small>
+                    </span>
+                </li>
+                <li><hr class="dropdown-divider"></li>
+                <li>
+                    <a class="dropdown-item text-danger" th:href="@{/logout}">
+                        <i class="bi bi-box-arrow-right me-2"></i>Cerrar Sesión
+                    </a>
+                </li>
+            </ul>
+        </div>
+    </div>
+</header>
+
+</html>
