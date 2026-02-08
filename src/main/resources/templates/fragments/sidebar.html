@@ -13,7 +13,7 @@
     <ul class="sidebar-menu">
         <!-- Dashboard -->
         <li>
-            <a th:href="@{/dashboard}" th:classappend="${#strings.contains(#httpServletRequest.requestURI, '/dashboard')} ? 'active' : ''">
+            <a th:href="@{/dashboard}" th:classappend="${currentPage == 'dashboard'} ? 'active' : ''">
                 <i class="bi bi-speedometer2"></i>
                 <span>Dashboard</span>
             </a>
@@ -23,21 +23,21 @@
         <li class="menu-header">Biblioteca</li>
         
         <li>
-            <a th:href="@{/libros}" th:classappend="${#strings.contains(#httpServletRequest.requestURI, '/libros')} ? 'active' : ''">
+            <a th:href="@{/libros}" th:classappend="${currentPage == 'libros'} ? 'active' : ''">
                 <i class="bi bi-book"></i>
                 <span>Libros</span>
             </a>
         </li>
         
         <li>
-            <a th:href="@{/autores}" th:classappend="${#strings.contains(#httpServletRequest.requestURI, '/autores')} ? 'active' : ''">
+            <a th:href="@{/autores}" th:classappend="${currentPage == 'autores'} ? 'active' : ''">
                 <i class="bi bi-person-badge"></i>
                 <span>Autores</span>
             </a>
         </li>
         
         <li>
-            <a th:href="@{/categorias}" th:classappend="${#strings.contains(#httpServletRequest.requestURI, '/categorias')} ? 'active' : ''">
+            <a th:href="@{/categorias}" th:classappend="${currentPage == 'categorias'} ? 'active' : ''">
                 <i class="bi bi-tags"></i>
                 <span>Categorías</span>
             </a>
@@ -47,7 +47,7 @@
         <li class="menu-header">Préstamos</li>
         
         <li>
-            <a th:href="@{/prestamos}" th:classappend="${#strings.contains(#httpServletRequest.requestURI, '/prestamos')} ? 'active' : ''">
+            <a th:href="@{/prestamos}" th:classappend="${currentPage == 'prestamos'} ? 'active' : ''">
                 <i class="bi bi-arrow-left-right"></i>
                 <span>Préstamos</span>
             </a>
@@ -64,7 +64,7 @@
         <li class="menu-header">Clientes</li>
         
         <li>
-            <a th:href="@{/clientes}" th:classappend="${#strings.contains(#httpServletRequest.requestURI, '/clientes')} ? 'active' : ''">
+            <a th:href="@{/clientes}" th:classappend="${currentPage == 'clientes'} ? 'active' : ''">
                 <i class="bi bi-people"></i>
                 <span>Clientes</span>
             </a>
@@ -75,14 +75,14 @@
             <li class="menu-header">Administración</li>
             
             <li>
-                <a th:href="@{/usuarios}" th:classappend="${#strings.contains(#httpServletRequest.requestURI, '/usuarios')} ? 'active' : ''">
+                <a th:href="@{/usuarios}" th:classappend="${currentPage == 'usuarios'} ? 'active' : ''">
                     <i class="bi bi-person-gear"></i>
                     <span>Usuarios</span>
                 </a>
             </li>
             
             <li>
-                <a th:href="@{/reportes}" th:classappend="${#strings.contains(#httpServletRequest.requestURI, '/reportes')} ? 'active' : ''">
+                <a th:href="@{/reportes}" th:classappend="${currentPage == 'reportes'} ? 'active' : ''">
                     <i class="bi bi-file-earmark-bar-graph"></i>
                     <span>Reportes</span>
                 </a>

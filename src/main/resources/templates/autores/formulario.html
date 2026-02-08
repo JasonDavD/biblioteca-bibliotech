@@ -1,0 +1,100 @@
+<!DOCTYPE html>
+<html xmlns:th="http://www.thymeleaf.org" lang="es">
+<head th:replace="~{fragments/footer :: head(${titulo})}">
+    <title>Autor - BiblioTech</title>
+</head>
+<body>
+    <div class="wrapper">
+        <!-- Sidebar -->
+        <div th:replace="~{fragments/sidebar :: sidebar}"></div>
+        
+        <!-- Contenido Principal -->
+        <div class="main-content">
+            <!-- Header -->
+            <header th:replace="~{fragments/header :: header}" th:with="pageTitle=${titulo}"></header>
+            
+            <!-- Contenido de la Página -->
+            <div class="page-content">
+                <!-- Alertas -->
+                <div th:replace="~{fragments/footer :: alerts}"></div>
+                
+                <div class="row justify-content-center">
+                    <div class="col-lg-6">
+                        <div class="form-container">
+                            <div class="form-header">
+                                <h4>
+                                    <i class="bi bi-person-badge me-2"></i>
+                                    <span th:text="${titulo}">Formulario Autor</span>
+                                </h4>
+                                <p class="text-muted mb-0" th:if="${esNuevo}">Complete los datos para registrar un nuevo autor</p>
+                                <p class="text-muted mb-0" th:unless="${esNuevo}">Modifique los datos del autor</p>
+                            </div>
+                            
+                            <!-- Formulario -->
+                            <form th:action="${esNuevo} ? @{/autores/nuevo} : @{/autores/editar/{id}(id=${autorId})}"
+                                  th:object="${autorRequest}"
+                                  method="post"
+                                  class="needs-validation"
+                                  novalidate>
+                                
+                                <div class="row g-3">
+                                    <!-- Nombre -->
+                                    <div class="col-12">
+                                        <label for="nombre" class="form-label">
+                                            Nombre Completo <span class="text-danger">*</span>
+                                        </label>
+                                        <div class="input-group">
+                                            <span class="input-group-text"><i class="bi bi-person"></i></span>
+                                            <input type="text" 
+                                                   class="form-control" 
+                                                   id="nombre"
+                                                   th:field="*{nombre}"
+                                                   th:classappend="${#fields.hasErrors('nombre')} ? 'is-invalid' : ''"
+                                                   placeholder="Nombre completo del autor"
+                                                   required>
+                                            <div class="invalid-feedback" th:if="${#fields.hasErrors('nombre')}" th:errors="*{nombre}">
+                                                Error
+                                            </div>
+                                        </div>
+                                    </div>
+                                    
+                                    <!-- Nacionalidad -->
+                                    <div class="col-12">
+                                        <label for="nacionalidad" class="form-label">Nacionalidad</label>
+                                        <div class="input-group">
+                                            <span class="input-group-text"><i class="bi bi-globe"></i></span>
+                                            <input type="text" 
+                                                   class="form-control" 
+                                                   id="nacionalidad"
+                                                   th:field="*{nacionalidad}"
+                                                   th:classappend="${#fields.hasErrors('nacionalidad')} ? 'is-invalid' : ''"
+                                                   placeholder="Ej: Peruana, Colombiana, Española...">
+                                            <div class="invalid-feedback" th:if="${#fields.hasErrors('nacionalidad')}" th:errors="*{nacionalidad}">
+                                                Error
+                                            </div>
+                                        </div>
+                                    </div>
+                                </div>
+                                
+                                <!-- Botones -->
+                                <div class="d-flex justify-content-between mt-4 pt-3 border-top">
+                                    <a th:href="@{/autores}" class="btn btn-outline-secondary">
+                                        <i class="bi bi-arrow-left me-2"></i>Cancelar
+                                    </a>
+                                    <button type="submit" class="btn btn-primary">
+                                        <i class="bi bi-check-lg me-2"></i>
+                                        <span th:text="${esNuevo} ? 'Registrar Autor' : 'Guardar Cambios'">Guardar</span>
+                                    </button>
+                                </div>
+                            </form>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+    
+    <!-- Scripts -->
+    <div th:replace="~{fragments/footer :: scripts}"></div>
+</body>
+</html>

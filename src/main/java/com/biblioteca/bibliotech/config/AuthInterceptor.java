@@ -81,7 +81,27 @@ public class AuthInterceptor implements HandlerInterceptor {
                     modelAndView.addObject("esAdmin", Rol.ADMIN.equals(usuario.getRol()));
                 }
             }
+            
+            // Agregar currentPage basado en la URI
+            String uri = request.getRequestURI();
+            String currentPage = determinarPaginaActual(uri);
+            modelAndView.addObject("currentPage", currentPage);
         }
+    }
+    
+    /**
+     * Determina la página actual basándose en la URI.
+     */
+    private String determinarPaginaActual(String uri) {
+        if (uri.contains("/dashboard")) return "dashboard";
+        if (uri.contains("/libros")) return "libros";
+        if (uri.contains("/autores")) return "autores";
+        if (uri.contains("/categorias")) return "categorias";
+        if (uri.contains("/prestamos")) return "prestamos";
+        if (uri.contains("/clientes")) return "clientes";
+        if (uri.contains("/usuarios")) return "usuarios";
+        if (uri.contains("/reportes")) return "reportes";
+        return "";
     }
     
     /**

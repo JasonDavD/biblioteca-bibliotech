@@ -1,0 +1,99 @@
+<!DOCTYPE html>
+<html xmlns:th="http://www.thymeleaf.org" lang="es">
+<head th:replace="~{fragments/footer :: head('Extender Plazo')}">
+    <title>Extender Plazo - BiblioTech</title>
+</head>
+<body>
+    <div class="wrapper">
+        <!-- Sidebar -->
+        <div th:replace="~{fragments/sidebar :: sidebar}"></div>
+        
+        <!-- Contenido Principal -->
+        <div class="main-content">
+            <!-- Header -->
+            <header th:replace="~{fragments/header :: header}" th:with="pageTitle='Extender Plazo'"></header>
+            
+            <!-- Contenido de la Página -->
+            <div class="page-content">
+                <div class="row justify-content-center">
+                    <div class="col-lg-6">
+                        <div class="form-container">
+                            <div class="form-header">
+                                <h4>
+                                    <i class="bi bi-calendar-plus me-2"></i>Extender Plazo de Préstamo
+                                </h4>
+                                <p class="text-muted mb-0">Modifique la fecha de devolución esperada</p>
+                            </div>
+                            
+                            <!-- Información del Préstamo -->
+                            <div class="alert alert-info">
+                                <div class="row">
+                                    <div class="col-6">
+                                        <strong><i class="bi bi-book me-1"></i>Libro:</strong>
+                                        <p class="mb-0" th:text="${prestamo.tituloLibro}">Título</p>
+                                    </div>
+                                    <div class="col-6">
+                                        <strong><i class="bi bi-person me-1"></i>Cliente:</strong>
+                                        <p class="mb-0" th:text="${prestamo.nombreCompletoCliente}">Cliente</p>
+                                    </div>
+                                </div>
+                            </div>
+                            
+                            <!-- Estado actual -->
+                            <div class="row g-3 mb-4">
+                                <div class="col-6">
+                                    <div class="card bg-light">
+                                        <div class="card-body text-center">
+                                            <small class="text-muted">Fecha Actual de Devolución</small>
+                                            <h5 th:text="${#temporals.format(prestamo.fechaDevolucionEsperada, 'dd/MM/yyyy')}">15/01/2024</h5>
+                                        </div>
+                                    </div>
+                                </div>
+                                <div class="col-6">
+                                    <div class="card" th:classappend="${prestamo.estaVencido} ? 'bg-danger text-white' : 'bg-warning'">
+                                        <div class="card-body text-center">
+                                            <small>Estado</small>
+                                            <h5 th:if="${prestamo.estaVencido}" th:text="'Vencido (' + ${prestamo.diasRetraso} + ' días)'">Vencido</h5>
+                                            <h5 th:unless="${prestamo.estaVencido}" th:text="${prestamo.diasRestantes} + ' días restantes'">Activo</h5>
+                                        </div>
+                                    </div>
+                                </div>
+                            </div>
+                            
+                            <!-- Formulario -->
+                            <form th:action="@{/prestamos/extender/{id}(id=${prestamo.id})}" method="post">
+                                <div class="mb-4">
+                                    <label for="nuevaFecha" class="form-label">
+                                        <i class="bi bi-calendar me-1"></i>Nueva Fecha de Devolución <span class="text-danger">*</span>
+                                    </label>
+                                    <input type="date" 
+                                           class="form-control form-control-lg" 
+                                           id="nuevaFecha"
+                                           name="nuevaFecha"
+                                           th:value="${nuevaFecha}"
+                                           th:min="${fechaMinima}"
+                                           required>
+                                    <small class="text-muted">La nueva fecha debe ser posterior a hoy</small>
+                                </div>
+                                
+                                <!-- Botones -->
+                                <div class="d-flex justify-content-between pt-3 border-top">
+                                    <a th:href="@{/prestamos}" class="btn btn-outline-secondary">
+                                        <i class="bi bi-arrow-left me-2"></i>Cancelar
+                                    </a>
+                                    <button type="submit" class="btn btn-warning">
+                                        <i class="bi bi-calendar-plus me-2"></i>Extender Plazo
+                                    </button>
+                                </div>
+                            </form>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+    
+    <!-- Scripts -->
+    <div th:replace="~{fragments/footer :: scripts}"></div>
+</body>
+</html>

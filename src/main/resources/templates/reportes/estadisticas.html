@@ -1,0 +1,167 @@
+<!DOCTYPE html>
+<html xmlns:th="http://www.thymeleaf.org" lang="es">
+<head th:replace="~{fragments/footer :: head('Estadísticas')}">
+    <title>Estadísticas - BiblioTech</title>
+</head>
+<body>
+    <div class="wrapper">
+        <!-- Sidebar -->
+        <div th:replace="~{fragments/sidebar :: sidebar}"></div>
+        
+        <!-- Contenido Principal -->
+        <div class="main-content">
+            <!-- Header -->
+            <header th:replace="~{fragments/header :: header}" th:with="pageTitle=${titulo}"></header>
+            
+            <!-- Contenido de la Página -->
+            <div class="page-content">
+                <!-- Cabecera -->
+                <div class="d-flex justify-content-between align-items-center mb-4">
+                    <div>
+                        <h4><i class="bi bi-graph-up me-2"></i><span th:text="${titulo}">Estadísticas</span></h4>
+                        <p class="text-muted mb-0">Resumen completo del sistema de biblioteca</p>
+                    </div>
+                    <a th:href="@{/reportes}" class="btn btn-outline-secondary">
+                        <i class="bi bi-arrow-left me-1"></i>Volver
+                    </a>
+                </div>
+                
+                <!-- Estadísticas de Biblioteca -->
+                <div class="card-custom card mb-4">
+                    <div class="card-header">
+                        <i class="bi bi-book me-2"></i>Biblioteca
+                    </div>
+                    <div class="card-body">
+                        <div class="row g-4">
+                            <div class="col-md-3">
+                                <div class="stat-card primary">
+                                    <div class="stat-value" th:text="${totalLibros}">0</div>
+                                    <div class="stat-label">Títulos Registrados</div>
+                                </div>
+                            </div>
+                            <div class="col-md-3">
+                                <div class="stat-card info">
+                                    <div class="stat-value" th:text="${totalEjemplares}">0</div>
+                                    <div class="stat-label">Total Ejemplares</div>
+                                </div>
+                            </div>
+                            <div class="col-md-3">
+                                <div class="stat-card success">
+                                    <div class="stat-value" th:text="${ejemplaresDisponibles}">0</div>
+                                    <div class="stat-label">Disponibles</div>
+                                </div>
+                            </div>
+                            <div class="col-md-3">
+                                <div class="stat-card warning">
+                                    <div class="stat-value" th:text="${ejemplaresPrestados}">0</div>
+                                    <div class="stat-label">Prestados</div>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+                
+                <!-- Estadísticas de Clientes -->
+                <div class="card-custom card mb-4">
+                    <div class="card-header">
+                        <i class="bi bi-people me-2"></i>Clientes
+                    </div>
+                    <div class="card-body">
+                        <div class="row g-4">
+                            <div class="col-md-4">
+                                <div class="stat-card primary">
+                                    <div class="stat-value" th:text="${totalClientes}">0</div>
+                                    <div class="stat-label">Total Clientes</div>
+                                </div>
+                            </div>
+                            <div class="col-md-4">
+                                <div class="stat-card success">
+                                    <div class="stat-value" th:text="${clientesActivos}">0</div>
+                                    <div class="stat-label">Activos</div>
+                                </div>
+                            </div>
+                            <div class="col-md-4">
+                                <div class="stat-card danger">
+                                    <div class="stat-value" th:text="${clientesInactivos}">0</div>
+                                    <div class="stat-label">Inactivos</div>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+                
+                <!-- Estadísticas de Préstamos -->
+                <div class="card-custom card mb-4">
+                    <div class="card-header">
+                        <i class="bi bi-arrow-left-right me-2"></i>Préstamos
+                    </div>
+                    <div class="card-body">
+                        <div class="row g-4">
+                            <div class="col-md-3">
+                                <div class="stat-card warning">
+                                    <div class="stat-value" th:text="${prestamosActivos}">0</div>
+                                    <div class="stat-label">Activos</div>
+                                </div>
+                            </div>
+                            <div class="col-md-3">
+                                <div class="stat-card danger">
+                                    <div class="stat-value" th:text="${prestamosVencidos}">0</div>
+                                    <div class="stat-label">Vencidos</div>
+                                </div>
+                            </div>
+                            <div class="col-md-3">
+                                <div class="stat-card success">
+                                    <div class="stat-value" th:text="${prestamosHoy}">0</div>
+                                    <div class="stat-label">Préstamos Hoy</div>
+                                </div>
+                            </div>
+                            <div class="col-md-3">
+                                <div class="stat-card info">
+                                    <div class="stat-value" th:text="${devolucionesHoy}">0</div>
+                                    <div class="stat-label">Devoluciones Hoy</div>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+                
+                <!-- Estadísticas del Catálogo -->
+                <div class="card-custom card">
+                    <div class="card-header">
+                        <i class="bi bi-collection me-2"></i>Catálogo
+                    </div>
+                    <div class="card-body">
+                        <div class="row g-4">
+                            <div class="col-md-6">
+                                <div class="stat-card info">
+                                    <div class="d-flex justify-content-between align-items-center">
+                                        <div>
+                                            <div class="stat-value" th:text="${totalAutores}">0</div>
+                                            <div class="stat-label">Autores</div>
+                                        </div>
+                                        <i class="bi bi-person-badge stat-icon"></i>
+                                    </div>
+                                </div>
+                            </div>
+                            <div class="col-md-6">
+                                <div class="stat-card primary">
+                                    <div class="d-flex justify-content-between align-items-center">
+                                        <div>
+                                            <div class="stat-value" th:text="${totalCategorias}">0</div>
+                                            <div class="stat-label">Categorías</div>
+                                        </div>
+                                        <i class="bi bi-tags stat-icon"></i>
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+    
+    <!-- Scripts -->
+    <div th:replace="~{fragments/footer :: scripts}"></div>
+</body>
+</html>

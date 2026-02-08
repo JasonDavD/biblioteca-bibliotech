@@ -1,0 +1,126 @@
+<!DOCTYPE html>
+<html xmlns:th="http://www.thymeleaf.org" lang="es">
+<head th:replace="~{fragments/footer :: head('Autores')}">
+    <title>Autores - BiblioTech</title>
+</head>
+<body>
+    <div class="wrapper">
+        <!-- Sidebar -->
+        <div th:replace="~{fragments/sidebar :: sidebar}"></div>
+        
+        <!-- Contenido Principal -->
+        <div class="main-content">
+            <!-- Header -->
+            <header th:replace="~{fragments/header :: header}" th:with="pageTitle='Gestión de Autores'"></header>
+            
+            <!-- Contenido de la Página -->
+            <div class="page-content">
+                <!-- Alertas -->
+                <div th:replace="~{fragments/footer :: alerts}"></div>
+                
+                <!-- Filtros y Búsqueda -->
+                <div class="filter-bar">
+                    <div class="row g-3 align-items-center">
+                        <div class="col-md-5">
+                            <form th:action="@{/autores}" method="get" class="search-box">
+                                <i class="bi bi-search"></i>
+                                <input type="text" 
+                                       class="form-control" 
+                                       name="busqueda"
+                                       th:value="${busqueda}"
+                                       placeholder="Buscar por nombre...">
+                            </form>
+                        </div>
+                        <div class="col-md-3">
+                            <select class="form-select" onchange="filtrarPorNacionalidad(this.value)">
+                                <option value="">Todas las nacionalidades</option>
+                                <option th:each="nac : ${nacionalidades}" 
+                                        th:value="${nac}" 
+                                        th:text="${nac}"
+                                        th:selected="${nacionalidadSeleccionada == nac}">Nacionalidad</option>
+                            </select>
+                        </div>
+                        <div class="col-md-2">
+                            <span class="badge bg-primary fs-6">
+                                <i class="bi bi-people me-1"></i>
+                                <span th:text="${totalAutores}">0</span> autores
+                            </span>
+                        </div>
+                        <div class="col-md-2 text-end">
+                            <a th:href="@{/autores/nuevo}" class="btn btn-primary">
+                                <i class="bi bi-plus-circle me-1"></i>Nuevo
+                            </a>
+                        </div>
+                    </div>
+                </div>
+                
+                <!-- Grid de Autores -->
+                <div class="row g-4">
+                    <div class="col-md-6 col-lg-4" th:each="autor : ${autores}">
+                        <div class="card-custom card h-100">
+                            <div class="card-body">
+                                <div class="d-flex align-items-start">
+									<!--
+                                    <div class="user-avatar me-3" 
+                                         style="width:50px;height:50px;font-size:1.2rem;background-color:var(--secondary-color);"
+                                         th:text="${autor.nombre.substring(0,1).toUpperCase()}">A
+									</div>
+									-->
+                                    <div class="flex-grow-1">
+                                        <h5 class="card-title mb-1" th:text="${autor.nombre}">Autor</h5>
+                                        <p class="text-muted small mb-2">
+                                            <i class="bi bi-globe me-1"></i>
+                                            <span th:text="${autor.nacionalidad} ?: 'No especificada'">Nacionalidad</span>
+                                        </p>
+                                        <span class="badge bg-primary">
+                                            <i class="bi bi-book me-1"></i>
+                                            <span th:text="${autor.cantidadLibros}">0</span> libros
+                                        </span>
+                                    </div>
+                                </div>
+                            </div>
+                            <div class="card-footer bg-transparent border-top-0">
+                                <div class="btn-group w-100">
+                                    <a th:href="@{/autores/ver/{id}(id=${autor.id})}" 
+                                       class="btn btn-sm btn-outline-primary">
+                                        <i class="bi bi-eye me-1"></i>Ver
+                                    </a>
+                                    <a th:href="@{/autores/editar/{id}(id=${autor.id})}" 
+                                       class="btn btn-sm btn-outline-warning">
+                                        <i class="bi bi-pencil me-1"></i>Editar
+                                    </a>
+                                    <form th:action="@{/autores/eliminar/{id}(id=${autor.id})}" 
+                                          method="post" class="d-inline">
+                                        <button type="submit" 
+                                                class="btn btn-sm btn-outline-danger"
+                                                th:data-confirm-delete="${autor.nombre}">
+                                            <i class="bi bi-trash"></i>
+                                        </button>
+                                    </form>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                    
+                    <!-- Sin resultados -->
+                    <div class="col-12" th:if="${#lists.isEmpty(autores)}">
+                        <div th:replace="~{fragments/footer :: sin-resultados}"></div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+    
+    <!-- Scripts -->
+    <div th:replace="~{fragments/footer :: scripts}"></div>
+    <script th:inline="javascript">
+        function filtrarPorNacionalidad(nacionalidad) {
+            if (nacionalidad) {
+                window.location.href = '[[@{/autores}]]?nacionalidad=' + encodeURIComponent(nacionalidad);
+            } else {
+                window.location.href = '[[@{/autores}]]';
+            }
+        }
+    </script>
+</body>
+</html>

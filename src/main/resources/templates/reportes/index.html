@@ -1,0 +1,180 @@
+<!DOCTYPE html>
+<html xmlns:th="http://www.thymeleaf.org" lang="es">
+<head th:replace="~{fragments/footer :: head('Reportes')}">
+    <title>Reportes - BiblioTech</title>
+</head>
+<body>
+    <div class="wrapper">
+        <!-- Sidebar -->
+        <div th:replace="~{fragments/sidebar :: sidebar}"></div>
+        
+        <!-- Contenido Principal -->
+        <div class="main-content">
+            <!-- Header -->
+            <header th:replace="~{fragments/header :: header}" th:with="pageTitle='Reportes y Estadísticas'"></header>
+            
+            <!-- Contenido de la Página -->
+            <div class="page-content">
+                <!-- Estadísticas Generales -->
+                <div class="row g-4 mb-4">
+                    <div class="col-md-3">
+                        <div class="stat-card primary">
+                            <div class="d-flex justify-content-between align-items-center">
+                                <div>
+                                    <div class="stat-value" th:text="${totalLibros}">0</div>
+                                    <div class="stat-label">Títulos</div>
+                                </div>
+                                <i class="bi bi-book stat-icon"></i>
+                            </div>
+                            <small class="text-muted" th:text="${totalEjemplares} + ' ejemplares'">0 ejemplares</small>
+                        </div>
+                    </div>
+                    <div class="col-md-3">
+                        <div class="stat-card success">
+                            <div class="d-flex justify-content-between align-items-center">
+                                <div>
+                                    <div class="stat-value" th:text="${ejemplaresDisponibles}">0</div>
+                                    <div class="stat-label">Disponibles</div>
+                                </div>
+                                <i class="bi bi-check-circle stat-icon"></i>
+                            </div>
+                        </div>
+                    </div>
+                    <div class="col-md-3">
+                        <div class="stat-card warning">
+                            <div class="d-flex justify-content-between align-items-center">
+                                <div>
+                                    <div class="stat-value" th:text="${prestamosActivos}">0</div>
+                                    <div class="stat-label">Préstamos Activos</div>
+                                </div>
+                                <i class="bi bi-arrow-left-right stat-icon"></i>
+                            </div>
+                        </div>
+                    </div>
+                    <div class="col-md-3">
+                        <div class="stat-card danger">
+                            <div class="d-flex justify-content-between align-items-center">
+                                <div>
+                                    <div class="stat-value" th:text="${prestamosVencidos}">0</div>
+                                    <div class="stat-label">Préstamos Vencidos</div>
+                                </div>
+                                <i class="bi bi-exclamation-triangle stat-icon"></i>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+                
+                <!-- Reportes Disponibles -->
+                <h5 class="mb-4"><i class="bi bi-file-earmark-bar-graph me-2"></i>Reportes Disponibles</h5>
+                
+                <div class="row g-4">
+                    <!-- Reporte: Préstamos Vencidos -->
+                    <div class="col-md-4">
+                        <div class="card-custom card h-100">
+                            <div class="card-body text-center">
+                                <div class="mb-3">
+                                    <i class="bi bi-exclamation-triangle text-danger" style="font-size: 3rem;"></i>
+                                </div>
+                                <h5 class="card-title">Préstamos Vencidos</h5>
+                                <p class="text-muted">Lista detallada de todos los préstamos que han superado su fecha de devolución.</p>
+                                <div class="mb-3">
+                                    <span class="badge bg-danger fs-5" th:text="${prestamosVencidos}">0</span>
+                                    <small class="text-muted d-block">préstamos vencidos</small>
+                                </div>
+                                <a th:href="@{/reportes/prestamos-vencidos}" class="btn btn-danger">
+                                    <i class="bi bi-file-text me-2"></i>Ver Reporte
+                                </a>
+                            </div>
+                        </div>
+                    </div>
+                    
+                    <!-- Reporte: Clientes Morosos -->
+                    <div class="col-md-4">
+                        <div class="card-custom card h-100">
+                            <div class="card-body text-center">
+                                <div class="mb-3">
+                                    <i class="bi bi-person-exclamation text-warning" style="font-size: 3rem;"></i>
+                                </div>
+                                <h5 class="card-title">Clientes Morosos</h5>
+                                <p class="text-muted">Clientes que tienen uno o más préstamos vencidos pendientes de devolución.</p>
+                                <a th:href="@{/reportes/clientes-morosos}" class="btn btn-warning">
+                                    <i class="bi bi-file-text me-2"></i>Ver Reporte
+                                </a>
+                            </div>
+                        </div>
+                    </div>
+                    
+                    <!-- Reporte: Estadísticas -->
+                    <div class="col-md-4">
+                        <div class="card-custom card h-100">
+                            <div class="card-body text-center">
+                                <div class="mb-3">
+                                    <i class="bi bi-graph-up text-primary" style="font-size: 3rem;"></i>
+                                </div>
+                                <h5 class="card-title">Estadísticas Generales</h5>
+                                <p class="text-muted">Resumen completo de las estadísticas del sistema de biblioteca.</p>
+                                <a th:href="@{/reportes/estadisticas}" class="btn btn-primary">
+                                    <i class="bi bi-bar-chart me-2"></i>Ver Estadísticas
+                                </a>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+                
+                <!-- Resumen Rápido -->
+                <div class="row g-4 mt-4">
+                    <div class="col-md-6">
+                        <div class="card-custom card">
+                            <div class="card-header">
+                                <i class="bi bi-people me-2"></i>Clientes
+                            </div>
+                            <div class="card-body">
+                                <div class="row text-center">
+                                    <div class="col-4">
+                                        <div class="fs-3 fw-bold text-primary" th:text="${totalClientes}">0</div>
+                                        <small class="text-muted">Total</small>
+                                    </div>
+                                    <div class="col-4">
+                                        <div class="fs-3 fw-bold text-success" th:text="${clientesActivos}">0</div>
+                                        <small class="text-muted">Activos</small>
+                                    </div>
+                                    <div class="col-4">
+                                        <div class="fs-3 fw-bold text-danger" th:text="${totalClientes - clientesActivos}">0</div>
+                                        <small class="text-muted">Inactivos</small>
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                    <div class="col-md-6">
+                        <div class="card-custom card">
+                            <div class="card-header">
+                                <i class="bi bi-collection me-2"></i>Catálogo
+                            </div>
+                            <div class="card-body">
+                                <div class="row text-center">
+                                    <div class="col-4">
+                                        <div class="fs-3 fw-bold text-primary" th:text="${totalLibros}">0</div>
+                                        <small class="text-muted">Libros</small>
+                                    </div>
+                                    <div class="col-4">
+                                        <div class="fs-3 fw-bold text-info" th:text="${totalAutores}">0</div>
+                                        <small class="text-muted">Autores</small>
+                                    </div>
+                                    <div class="col-4">
+                                        <div class="fs-3 fw-bold text-secondary" th:text="${totalCategorias}">0</div>
+                                        <small class="text-muted">Categorías</small>
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+    
+    <!-- Scripts -->
+    <div th:replace="~{fragments/footer :: scripts}"></div>
+</body>
+</html>

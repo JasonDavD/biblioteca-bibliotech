@@ -19,12 +19,11 @@
                 <span th:unless="${esAdmin}" class="badge badge-empleado">Empleado</span>
             </div>
         </div>
-        <div class="user-avatar" th:text="${usuarioLogueado?.nombre != null ? usuarioLogueado.nombre.substring(0,1).toUpperCase() : 'U'}">U</div>
+        <!-- <div class="user-avatar" th:text="${usuarioLogueado?.nombre != null ? usuarioLogueado.nombre.substring(0,1).toUpperCase() : 'U'}">U</div>-->
         
         <!-- Dropdown de usuario -->
         <div class="dropdown ms-2">
             <button class="btn btn-link dropdown-toggle" type="button" data-bs-toggle="dropdown">
-                <i class="bi bi-chevron-down"></i>
             </button>
             <ul class="dropdown-menu dropdown-menu-end">
                 <li>

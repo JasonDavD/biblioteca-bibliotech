@@ -1,0 +1,175 @@
+<!DOCTYPE html>
+<html xmlns:th="http://www.thymeleaf.org" lang="es">
+<head th:replace="~{fragments/footer :: head('Nuevo Préstamo')}">
+    <title>Nuevo Préstamo - BiblioTech</title>
+</head>
+<body>
+    <div class="wrapper">
+        <!-- Sidebar -->
+        <div th:replace="~{fragments/sidebar :: sidebar}"></div>
+        
+        <!-- Contenido Principal -->
+        <div class="main-content">
+            <!-- Header -->
+            <header th:replace="~{fragments/header :: header}" th:with="pageTitle='Registrar Préstamo'"></header>
+            
+            <!-- Contenido de la Página -->
+            <div class="page-content">
+                <!-- Alertas -->
+                <div th:replace="~{fragments/footer :: alerts}"></div>
+                
+                <div class="row justify-content-center">
+                    <div class="col-lg-8">
+                        <div class="form-container">
+                            <div class="form-header">
+                                <h4>
+                                    <i class="bi bi-arrow-right-circle me-2"></i>Nuevo Préstamo
+                                </h4>
+                                <p class="text-muted mb-0">Complete los datos para registrar un nuevo préstamo</p>
+                            </div>
+                            
+                            <!-- Formulario -->
+                            <form th:action="@{/prestamos/nuevo}"
+                                  th:object="${prestamoRequest}"
+                                  method="post"
+                                  class="needs-validation"
+                                  novalidate>
+                                
+                                <div class="row g-4">
+                                    <!-- Selección de Libro -->
+                                    <div class="col-12">
+                                        <label for="idLibro" class="form-label">
+                                            <i class="bi bi-book me-1"></i>Libro <span class="text-danger">*</span>
+                                        </label>
+                                        <select class="form-select form-select-lg" 
+                                                id="idLibro"
+                                                th:field="*{idLibro}"
+                                                th:classappend="${#fields.hasErrors('idLibro')} ? 'is-invalid' : ''"
+                                                required
+                                                th:disabled="${esPrestamoRapido}">
+                                            <option value="">Seleccione un libro disponible...</option>
+                                            <option th:each="libro : ${libros}" 
+                                                    th:value="${libro.id}" 
+                                                    th:text="${libro.titulo} + ' - ' + ${libro.nombreAutor} + ' (' + ${libro.cantidadDisponible} + ' disponibles)'">
+                                                Libro
+                                            </option>
+                                        </select>
+                                        <div class="invalid-feedback" th:if="${#fields.hasErrors('idLibro')}" th:errors="*{idLibro}">
+                                            Error
+                                        </div>
+                                        
+                                        <!-- Info del libro preseleccionado -->
+                                        <div th:if="${libro != null}" class="alert alert-info mt-2">
+                                            <div class="d-flex align-items-center">
+                                                <i class="bi bi-book fs-3 me-3"></i>
+                                                <div>
+                                                    <strong th:text="${libro.titulo}">Título</strong>
+                                                    <br>
+                                                    <small th:text="${libro.nombreAutor}">Autor</small>
+                                                    <span class="badge bg-success ms-2" 
+                                                          th:text="${libro.cantidadDisponible} + ' disponible(s)'">0</span>
+                                                </div>
+                                            </div>
+                                            <input type="hidden" th:field="*{idLibro}" th:value="${libro.id}">
+                                        </div>
+                                    </div>
+                                    
+                                    <!-- Selección de Cliente -->
+                                    <div class="col-12">
+                                        <label for="idCliente" class="form-label">
+                                            <i class="bi bi-person me-1"></i>Cliente <span class="text-danger">*</span>
+                                        </label>
+                                        <select class="form-select form-select-lg" 
+                                                id="idCliente"
+                                                th:field="*{idCliente}"
+                                                th:classappend="${#fields.hasErrors('idCliente')} ? 'is-invalid' : ''"
+                                                required>
+                                            <option value="">Seleccione un cliente activo...</option>
+                                            <option th:each="cliente : ${clientes}" 
+                                                    th:value="${cliente.id}" 
+                                                    th:text="${cliente.nombreCompleto} + ' - DNI: ' + ${cliente.dni} + ' (' + ${cliente.prestamosActivos} + '/3 préstamos)'"
+                                                    th:disabled="${!cliente.puedePrestar}">
+                                                Cliente
+                                            </option>
+                                        </select>
+                                        <div class="invalid-feedback" th:if="${#fields.hasErrors('idCliente')}" th:errors="*{idCliente}">
+                                            Error
+                                        </div>
+                                        <small class="text-muted">Solo se muestran clientes activos con menos de 3 préstamos</small>
+                                    </div>
+                                    
+                                    <!-- Fecha de Devolución -->
+                                    <div class="col-md-6">
+                                        <label for="fechaDevolucionEsperada" class="form-label">
+                                            <i class="bi bi-calendar me-1"></i>Fecha de Devolución <span class="text-danger">*</span>
+                                        </label>
+                                        <input type="date" 
+                                               class="form-control form-control-lg" 
+                                               id="fechaDevolucionEsperada"
+                                               th:field="*{fechaDevolucionEsperada}"
+                                               th:classappend="${#fields.hasErrors('fechaDevolucionEsperada')} ? 'is-invalid' : ''"
+                                               th:min="${fechaMinima}"
+                                               required>
+                                        <div class="invalid-feedback" th:if="${#fields.hasErrors('fechaDevolucionEsperada')}" th:errors="*{fechaDevolucionEsperada}">
+                                            Error
+                                        </div>
+                                        <small class="text-muted">Por defecto: 14 días a partir de hoy</small>
+                                    </div>
+                                    
+                                    <!-- Fecha de Hoy (solo info) -->
+                                    <div class="col-md-6">
+                                        <label class="form-label">
+                                            <i class="bi bi-calendar-check me-1"></i>Fecha del Préstamo
+                                        </label>
+                                        <input type="text" 
+                                               class="form-control form-control-lg" 
+                                               th:value="${#temporals.format(fechaHoy, 'dd/MM/yyyy')}"
+                                               disabled>
+                                        <small class="text-muted">Fecha actual del sistema</small>
+                                    </div>
+                                    
+                                    <!-- Observaciones -->
+                                    <div class="col-12">
+                                        <label for="observaciones" class="form-label">
+                                            <i class="bi bi-chat-text me-1"></i>Observaciones
+                                        </label>
+                                        <textarea class="form-control" 
+                                                  id="observaciones"
+                                                  th:field="*{observaciones}"
+                                                  rows="2"
+                                                  placeholder="Observaciones adicionales (opcional)"></textarea>
+                                    </div>
+                                </div>
+                                
+                                <!-- Reglas de negocio -->
+                                <div class="alert alert-warning mt-4">
+                                    <h6 class="alert-heading"><i class="bi bi-info-circle me-2"></i>Reglas de Préstamo</h6>
+                                    <ul class="mb-0 small">
+                                        <li>Cada cliente puede tener máximo <strong>3 préstamos activos</strong></li>
+                                        <li>No se puede prestar el mismo libro dos veces al mismo cliente</li>
+                                        <li>Solo clientes activos pueden realizar préstamos</li>
+                                        <li>El libro debe tener stock disponible</li>
+                                    </ul>
+                                </div>
+                                
+                                <!-- Botones -->
+                                <div class="d-flex justify-content-between mt-4 pt-3 border-top">
+                                    <a th:href="@{/prestamos}" class="btn btn-outline-secondary">
+                                        <i class="bi bi-arrow-left me-2"></i>Cancelar
+                                    </a>
+                                    <button type="submit" class="btn btn-success btn-lg">
+                                        <i class="bi bi-check-lg me-2"></i>Registrar Préstamo
+                                    </button>
+                                </div>
+                            </form>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+    
+    <!-- Scripts -->
+    <div th:replace="~{fragments/footer :: scripts}"></div>
+</body>
+</html>

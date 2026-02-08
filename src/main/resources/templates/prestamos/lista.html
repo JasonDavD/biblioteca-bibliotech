@@ -1,0 +1,208 @@
+<!DOCTYPE html>
+<html xmlns:th="http://www.thymeleaf.org" lang="es">
+<head th:replace="~{fragments/footer :: head('Préstamos')}">
+    <title>Préstamos - BiblioTech</title>
+</head>
+<body>
+    <div class="wrapper">
+        <!-- Sidebar -->
+        <div th:replace="~{fragments/sidebar :: sidebar}"></div>
+        
+        <!-- Contenido Principal -->
+        <div class="main-content">
+            <!-- Header -->
+            <header th:replace="~{fragments/header :: header}" th:with="pageTitle='Gestión de Préstamos'"></header>
+            
+            <!-- Contenido de la Página -->
+            <div class="page-content">
+                <!-- Alertas -->
+                <div th:replace="~{fragments/footer :: alerts}"></div>
+                
+                <!-- Estadísticas -->
+                <div class="row g-4 mb-4">
+                    <div class="col-md-3">
+                        <div class="stat-card primary">
+                            <div class="d-flex justify-content-between align-items-center">
+                                <div>
+                                    <div class="stat-value" th:text="${totalActivos}">0</div>
+                                    <div class="stat-label">Activos</div>
+                                </div>
+                                <i class="bi bi-hourglass-split stat-icon"></i>
+                            </div>
+                        </div>
+                    </div>
+                    <div class="col-md-3">
+                        <div class="stat-card danger">
+                            <div class="d-flex justify-content-between align-items-center">
+                                <div>
+                                    <div class="stat-value" th:text="${totalVencidos}">0</div>
+                                    <div class="stat-label">Vencidos</div>
+                                </div>
+                                <i class="bi bi-exclamation-triangle stat-icon"></i>
+                            </div>
+                        </div>
+                    </div>
+                    <div class="col-md-3">
+                        <div class="stat-card success">
+                            <div class="d-flex justify-content-between align-items-center">
+                                <div>
+                                    <div class="stat-value" th:text="${prestamosHoy}">0</div>
+                                    <div class="stat-label">Préstamos Hoy</div>
+                                </div>
+                                <i class="bi bi-arrow-up-circle stat-icon"></i>
+                            </div>
+                        </div>
+                    </div>
+                    <div class="col-md-3">
+                        <div class="stat-card info">
+                            <div class="d-flex justify-content-between align-items-center">
+                                <div>
+                                    <div class="stat-value" th:text="${devolucionesHoy}">0</div>
+                                    <div class="stat-label">Devoluciones Hoy</div>
+                                </div>
+                                <i class="bi bi-arrow-down-circle stat-icon"></i>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+                
+                <!-- Filtros -->
+                <div class="filter-bar">
+                    <div class="row g-3 align-items-center">
+                        <div class="col-md-8">
+                            <div class="btn-group">
+                                <a th:href="@{/prestamos}" 
+                                   class="btn"
+                                   th:classappend="${filtroActual == null} ? 'btn-primary' : 'btn-outline-primary'">
+                                    <i class="bi bi-list me-1"></i>Todos
+                                </a>
+                                <a th:href="@{/prestamos(filtro='activos')}" 
+                                   class="btn"
+                                   th:classappend="${filtroActual == 'activos'} ? 'btn-warning' : 'btn-outline-warning'">
+                                    <i class="bi bi-hourglass-split me-1"></i>Activos
+                                </a>
+                                <a th:href="@{/prestamos(filtro='vencidos')}" 
+                                   class="btn"
+                                   th:classappend="${filtroActual == 'vencidos'} ? 'btn-danger' : 'btn-outline-danger'">
+                                    <i class="bi bi-exclamation-triangle me-1"></i>Vencidos
+                                </a>
+                                <a th:href="@{/prestamos(filtro='porVencer')}" 
+                                   class="btn"
+                                   th:classappend="${filtroActual == 'porVencer'} ? 'btn-info' : 'btn-outline-info'">
+                                    <i class="bi bi-clock me-1"></i>Por Vencer
+                                </a>
+                                <a th:href="@{/prestamos(filtro='devueltos')}" 
+                                   class="btn"
+                                   th:classappend="${filtroActual == 'devueltos'} ? 'btn-success' : 'btn-outline-success'">
+                                    <i class="bi bi-check-circle me-1"></i>Devueltos
+                                </a>
+                            </div>
+                        </div>
+                        <div class="col-md-4 text-end">
+                            <a th:href="@{/prestamos/nuevo}" class="btn btn-primary">
+                                <i class="bi bi-plus-circle me-2"></i>Nuevo Préstamo
+                            </a>
+                        </div>
+                    </div>
+                </div>
+                
+                <!-- Tabla de Préstamos -->
+                <div class="table-container">
+                    <div class="table-responsive">
+                        <table class="table table-custom mb-0">
+                            <thead>
+                                <tr>
+                                    <th>ID</th>
+                                    <th>Libro</th>
+                                    <th>Cliente</th>
+                                    <th>Fecha Préstamo</th>
+                                    <th>Fecha Devolución</th>
+                                    <th>Estado</th>
+                                    <th class="text-center">Acciones</th>
+                                </tr>
+                            </thead>
+                            <tbody>
+                                <tr th:each="prestamo : ${prestamos}">
+                                    <td>
+                                        <code th:text="'#' + ${prestamo.id}">ID</code>
+                                    </td>
+                                    <td>
+                                        <a th:href="@{/libros/ver/{id}(id=${prestamo.idLibro})}" 
+                                           class="text-decoration-none fw-bold"
+                                           th:text="${prestamo.tituloLibro}">Libro</a>
+                                    </td>
+                                    <td>
+                                        <a th:href="@{/clientes/ver/{id}(id=${prestamo.idCliente})}" 
+                                           class="text-decoration-none">
+                                            <span th:text="${prestamo.nombreCompletoCliente}">Cliente</span>
+                                            <br>
+                                            <small class="text-muted">DNI: <span th:text="${prestamo.dniCliente}">DNI</span></small>
+                                        </a>
+                                    </td>
+                                    <td th:text="${#temporals.format(prestamo.fechaPrestamo, 'dd/MM/yyyy')}">01/01/2024</td>
+                                    <td>
+                                        <span th:if="${prestamo.fechaDevolucionReal != null}">
+                                            <i class="bi bi-check-circle text-success me-1"></i>
+                                            <span th:text="${#temporals.format(prestamo.fechaDevolucionReal, 'dd/MM/yyyy')}">15/01/2024</span>
+                                        </span>
+                                        <span th:unless="${prestamo.fechaDevolucionReal != null}">
+                                            <span th:text="${#temporals.format(prestamo.fechaDevolucionEsperada, 'dd/MM/yyyy')}">15/01/2024</span>
+                                            <br>
+                                            <small th:if="${prestamo.diasRestantes != null && prestamo.diasRestantes > 0}" class="text-success">
+                                                <span th:text="${prestamo.diasRestantes}">0</span> días restantes
+                                            </small>
+                                            <small th:if="${prestamo.diasRetraso != null && prestamo.diasRetraso > 0}" class="text-danger">
+                                                <span th:text="${prestamo.diasRetraso}">0</span> días de retraso
+                                            </small>
+                                        </span>
+                                    </td>
+                                    <td>
+                                        <span th:if="${prestamo.estado.name() == 'ACTIVO'}" class="badge badge-activo">
+                                            <i class="bi bi-hourglass-split me-1"></i>Activo
+                                        </span>
+                                        <span th:if="${prestamo.estado.name() == 'VENCIDO'}" class="badge badge-vencido">
+                                            <i class="bi bi-exclamation-triangle me-1"></i>Vencido
+                                        </span>
+                                        <span th:if="${prestamo.estado.name() == 'DEVUELTO'}" class="badge badge-devuelto">
+                                            <i class="bi bi-check-circle me-1"></i>Devuelto
+                                        </span>
+                                    </td>
+                                    <td class="text-center">
+                                        <div class="btn-group">
+                                            <a th:href="@{/prestamos/ver/{id}(id=${prestamo.id})}" 
+                                               class="btn btn-sm btn-outline-primary"
+                                               data-bs-toggle="tooltip" title="Ver detalles">
+                                                <i class="bi bi-eye"></i>
+                                            </a>
+                                            <a th:if="${prestamo.estado.name() != 'DEVUELTO'}"
+                                               th:href="@{/prestamos/devolver/{id}(id=${prestamo.id})}" 
+                                               class="btn btn-sm btn-outline-success"
+                                               data-bs-toggle="tooltip" title="Devolver">
+                                                <i class="bi bi-check-lg"></i>
+                                            </a>
+                                            <a th:if="${prestamo.estado.name() != 'DEVUELTO'}"
+                                               th:href="@{/prestamos/extender/{id}(id=${prestamo.id})}" 
+                                               class="btn btn-sm btn-outline-warning"
+                                               data-bs-toggle="tooltip" title="Extender plazo">
+                                                <i class="bi bi-calendar-plus"></i>
+                                            </a>
+                                        </div>
+                                    </td>
+                                </tr>
+                                <tr th:if="${#lists.isEmpty(prestamos)}">
+                                    <td colspan="7">
+                                        <div th:replace="~{fragments/footer :: sin-resultados}"></div>
+                                    </td>
+                                </tr>
+                            </tbody>
+                        </table>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+    
+    <!-- Scripts -->
+    <div th:replace="~{fragments/footer :: scripts}"></div>
+</body>
+</html>

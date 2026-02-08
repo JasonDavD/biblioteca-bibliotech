@@ -1,0 +1,104 @@
+<!DOCTYPE html>
+<html xmlns:th="http://www.thymeleaf.org" lang="es">
+<head th:replace="~{fragments/footer :: head('Categorías')}">
+    <title>Categorías - BiblioTech</title>
+</head>
+<body>
+    <div class="wrapper">
+        <!-- Sidebar -->
+        <div th:replace="~{fragments/sidebar :: sidebar}"></div>
+        
+        <!-- Contenido Principal -->
+        <div class="main-content">
+            <!-- Header -->
+            <header th:replace="~{fragments/header :: header}" th:with="pageTitle='Gestión de Categorías'"></header>
+            
+            <!-- Contenido de la Página -->
+            <div class="page-content">
+                <!-- Alertas -->
+                <div th:replace="~{fragments/footer :: alerts}"></div>
+                
+                <!-- Filtros y Búsqueda -->
+                <div class="filter-bar">
+                    <div class="row g-3 align-items-center">
+                        <div class="col-md-6">
+                            <form th:action="@{/categorias}" method="get" class="search-box">
+                                <i class="bi bi-search"></i>
+                                <input type="text" 
+                                       class="form-control" 
+                                       name="busqueda"
+                                       th:value="${busqueda}"
+                                       placeholder="Buscar categoría...">
+                            </form>
+                        </div>
+                        <div class="col-md-3">
+                            <span class="badge bg-primary fs-6">
+                                <i class="bi bi-tags me-1"></i>
+                                <span th:text="${totalCategorias}">0</span> categorías
+                            </span>
+                        </div>
+                        <div class="col-md-3 text-end">
+                            <a th:href="@{/categorias/nuevo}" class="btn btn-primary">
+                                <i class="bi bi-plus-circle me-1"></i>Nueva Categoría
+                            </a>
+                        </div>
+                    </div>
+                </div>
+                
+                <!-- Grid de Categorías -->
+                <div class="row g-4">
+                    <div class="col-md-6 col-lg-4" th:each="categoria : ${categorias}">
+                        <div class="card-custom card h-100">
+                            <div class="card-body">
+                                <div class="d-flex align-items-start">
+                                    <div class="me-3 text-center" style="width:50px;">
+                                        <i class="bi bi-tag-fill fs-2 text-info"></i>
+                                    </div>
+                                    <div class="flex-grow-1">
+                                        <h5 class="card-title mb-1" th:text="${categoria.nombre}">Categoría</h5>
+                                        <p class="text-muted small mb-2" th:text="${categoria.descripcion} ?: 'Sin descripción'">
+                                            Descripción
+                                        </p>
+                                        <span class="badge bg-primary">
+                                            <i class="bi bi-book me-1"></i>
+                                            <span th:text="${categoria.cantidadLibros}">0</span> libros
+                                        </span>
+                                    </div>
+                                </div>
+                            </div>
+                            <div class="card-footer bg-transparent border-top-0">
+                                <div class="btn-group w-100">
+                                    <a th:href="@{/categorias/ver/{id}(id=${categoria.id})}" 
+                                       class="btn btn-sm btn-outline-primary">
+                                        <i class="bi bi-eye me-1"></i>Ver
+                                    </a>
+                                    <a th:href="@{/categorias/editar/{id}(id=${categoria.id})}" 
+                                       class="btn btn-sm btn-outline-warning">
+                                        <i class="bi bi-pencil me-1"></i>Editar
+                                    </a>
+                                    <form th:action="@{/categorias/eliminar/{id}(id=${categoria.id})}" 
+                                          method="post" class="d-inline">
+                                        <button type="submit" 
+                                                class="btn btn-sm btn-outline-danger"
+                                                th:data-confirm-delete="${categoria.nombre}">
+                                            <i class="bi bi-trash"></i>
+                                        </button>
+                                    </form>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                    
+                    <!-- Sin resultados -->
+                    <div class="col-12" th:if="${#lists.isEmpty(categorias)}">
+                        <div th:replace="~{fragments/footer :: sin-resultados}"></div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+    
+    <!-- Scripts -->
+    <div th:replace="~{fragments/footer :: scripts}"></div>
+</body>
+</html>

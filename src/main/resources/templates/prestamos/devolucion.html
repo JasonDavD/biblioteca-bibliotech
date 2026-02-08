@@ -1,0 +1,138 @@
+<!DOCTYPE html>
+<html xmlns:th="http://www.thymeleaf.org" lang="es">
+<head th:replace="~{fragments/footer :: head('Devolución')}">
+    <title>Devolución - BiblioTech</title>
+</head>
+<body>
+    <div class="wrapper">
+        <!-- Sidebar -->
+        <div th:replace="~{fragments/sidebar :: sidebar}"></div>
+        
+        <!-- Contenido Principal -->
+        <div class="main-content">
+            <!-- Header -->
+            <header th:replace="~{fragments/header :: header}" th:with="pageTitle='Registrar Devolución'"></header>
+            
+            <!-- Contenido de la Página -->
+            <div class="page-content">
+                <div class="row justify-content-center">
+                    <div class="col-lg-8">
+                        <div class="form-container">
+                            <div class="form-header">
+                                <h4>
+                                    <i class="bi bi-box-arrow-in-left me-2"></i>Devolución de Préstamo
+                                </h4>
+                                <p class="text-muted mb-0">Confirme la devolución del libro</p>
+                            </div>
+                            
+                            <!-- Información del Préstamo -->
+                            <div class="row g-4 mb-4">
+                                <!-- Libro -->
+                                <div class="col-md-6">
+                                    <div class="card bg-light">
+                                        <div class="card-body">
+                                            <h6 class="text-muted mb-2">
+                                                <i class="bi bi-book me-1"></i>Libro
+                                            </h6>
+                                            <h5 th:text="${prestamo.tituloLibro}">Título</h5>
+                                        </div>
+                                    </div>
+                                </div>
+                                
+                                <!-- Cliente -->
+                                <div class="col-md-6">
+                                    <div class="card bg-light">
+                                        <div class="card-body">
+                                            <h6 class="text-muted mb-2">
+                                                <i class="bi bi-person me-1"></i>Cliente
+                                            </h6>
+                                            <h5 th:text="${prestamo.nombreCompletoCliente}">Cliente</h5>
+                                            <small class="text-muted">DNI: <span th:text="${prestamo.dniCliente}">DNI</span></small>
+                                        </div>
+                                    </div>
+                                </div>
+                                
+                                <!-- Fechas -->
+                                <div class="col-md-4">
+                                    <div class="card bg-light">
+                                        <div class="card-body text-center">
+                                            <h6 class="text-muted mb-2">Fecha Préstamo</h6>
+                                            <h5 th:text="${#temporals.format(prestamo.fechaPrestamo, 'dd/MM/yyyy')}">01/01/2024</h5>
+                                        </div>
+                                    </div>
+                                </div>
+                                
+                                <div class="col-md-4">
+                                    <div class="card bg-light">
+                                        <div class="card-body text-center">
+                                            <h6 class="text-muted mb-2">Fecha Esperada</h6>
+                                            <h5 th:text="${#temporals.format(prestamo.fechaDevolucionEsperada, 'dd/MM/yyyy')}">15/01/2024</h5>
+                                        </div>
+                                    </div>
+                                </div>
+                                
+                                <div class="col-md-4">
+                                    <div class="card" th:classappend="${prestamo.estaVencido} ? 'bg-danger text-white' : 'bg-success text-white'">
+                                        <div class="card-body text-center">
+                                            <h6 class="mb-2">Devolución Hoy</h6>
+                                            <h5 th:text="${#temporals.format(fechaHoy, 'dd/MM/yyyy')}">20/01/2024</h5>
+                                        </div>
+                                    </div>
+                                </div>
+                            </div>
+                            
+                            <!-- Alerta de estado -->
+                            <div th:if="${prestamo.estaVencido}" class="alert alert-danger">
+                                <div class="d-flex align-items-center">
+                                    <i class="bi bi-exclamation-triangle fs-3 me-3"></i>
+                                    <div>
+                                        <strong>¡Préstamo Vencido!</strong>
+                                        <p class="mb-0">Este préstamo tiene <strong th:text="${prestamo.diasRetraso}">0</strong> día(s) de retraso.</p>
+                                    </div>
+                                </div>
+                            </div>
+                            
+                            <div th:unless="${prestamo.estaVencido}" class="alert alert-success">
+                                <div class="d-flex align-items-center">
+                                    <i class="bi bi-check-circle fs-3 me-3"></i>
+                                    <div>
+                                        <strong>Devolución a Tiempo</strong>
+                                        <p class="mb-0">El préstamo aún tiene <strong th:text="${prestamo.diasRestantes}">0</strong> día(s) antes del vencimiento.</p>
+                                    </div>
+                                </div>
+                            </div>
+                            
+                            <!-- Formulario de Devolución -->
+                            <form th:action="@{/prestamos/devolver/{id}(id=${prestamo.id})}" method="post">
+                                <div class="mb-4">
+                                    <label for="observaciones" class="form-label">
+                                        <i class="bi bi-chat-text me-1"></i>Observaciones de Devolución
+                                    </label>
+                                    <textarea class="form-control" 
+                                              id="observaciones"
+                                              name="observaciones"
+                                              rows="3"
+                                              placeholder="Estado del libro, observaciones adicionales... (opcional)"></textarea>
+                                </div>
+                                
+                                <!-- Botones -->
+                                <div class="d-flex justify-content-between pt-3 border-top">
+                                    <a th:href="@{/prestamos}" class="btn btn-outline-secondary">
+                                        <i class="bi bi-arrow-left me-2"></i>Cancelar
+                                    </a>
+                                    <button type="submit" class="btn btn-success btn-lg">
+                                        <i class="bi bi-check-lg me-2"></i>Confirmar Devolución
+                                    </button>
+                                </div>
+                            </form>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+    
+    <!-- Scripts -->
+    <div th:replace="~{fragments/footer :: scripts}"></div>
+</body>
+</html>

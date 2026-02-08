@@ -1,0 +1,149 @@
+<!DOCTYPE html>
+<html xmlns:th="http://www.thymeleaf.org" lang="es">
+<head th:replace="~{fragments/footer :: head('Detalle Préstamo')}">
+    <title>Préstamo - BiblioTech</title>
+</head>
+<body>
+    <div class="wrapper">
+        <!-- Sidebar -->
+        <div th:replace="~{fragments/sidebar :: sidebar}"></div>
+        
+        <!-- Contenido Principal -->
+        <div class="main-content">
+            <!-- Header -->
+            <header th:replace="~{fragments/header :: header}" th:with="pageTitle='Detalle de Préstamo'"></header>
+            
+            <!-- Contenido de la Página -->
+            <div class="page-content">
+                <div class="row justify-content-center">
+                    <div class="col-lg-8">
+                        <div class="card-custom card">
+                            <div class="card-header d-flex justify-content-between align-items-center">
+                                <span>
+                                    <i class="bi bi-receipt me-2"></i>Préstamo 
+                                    <code th:text="'#' + ${prestamo.id}">#1</code>
+                                </span>
+                                <span th:if="${prestamo.estado.name() == 'ACTIVO'}" class="badge badge-activo">
+                                    <i class="bi bi-hourglass-split me-1"></i>Activo
+                                </span>
+                                <span th:if="${prestamo.estado.name() == 'VENCIDO'}" class="badge badge-vencido">
+                                    <i class="bi bi-exclamation-triangle me-1"></i>Vencido
+                                </span>
+                                <span th:if="${prestamo.estado.name() == 'DEVUELTO'}" class="badge badge-devuelto">
+                                    <i class="bi bi-check-circle me-1"></i>Devuelto
+                                </span>
+                            </div>
+                            <div class="card-body">
+                                <div class="row g-4">
+                                    <!-- Información del Libro -->
+                                    <div class="col-md-6">
+                                        <div class="p-3 bg-light rounded">
+                                            <h6 class="text-muted mb-3">
+                                                <i class="bi bi-book me-2"></i>Libro
+                                            </h6>
+                                            <h5>
+                                                <a th:href="@{/libros/ver/{id}(id=${prestamo.idLibro})}" 
+                                                   class="text-decoration-none"
+                                                   th:text="${prestamo.tituloLibro}">Título</a>
+                                            </h5>
+                                        </div>
+                                    </div>
+                                    
+                                    <!-- Información del Cliente -->
+                                    <div class="col-md-6">
+                                        <div class="p-3 bg-light rounded">
+                                            <h6 class="text-muted mb-3">
+                                                <i class="bi bi-person me-2"></i>Cliente
+                                            </h6>
+                                            <h5>
+                                                <a th:href="@{/clientes/ver/{id}(id=${prestamo.idCliente})}" 
+                                                   class="text-decoration-none"
+                                                   th:text="${prestamo.nombreCompletoCliente}">Cliente</a>
+                                            </h5>
+                                            <small class="text-muted">DNI: <span th:text="${prestamo.dniCliente}">DNI</span></small>
+                                        </div>
+                                    </div>
+                                    
+                                    <!-- Fechas -->
+                                    <div class="col-12">
+                                        <h6 class="text-muted mb-3">
+                                            <i class="bi bi-calendar me-2"></i>Fechas
+                                        </h6>
+                                        <div class="row g-3">
+                                            <div class="col-md-4">
+                                                <div class="p-3 border rounded text-center">
+                                                    <small class="text-muted d-block">Fecha Préstamo</small>
+                                                    <strong th:text="${#temporals.format(prestamo.fechaPrestamo, 'dd/MM/yyyy')}">01/01/2024</strong>
+                                                </div>
+                                            </div>
+                                            <div class="col-md-4">
+                                                <div class="p-3 border rounded text-center">
+                                                    <small class="text-muted d-block">Fecha Devolución Esperada</small>
+                                                    <strong th:text="${#temporals.format(prestamo.fechaDevolucionEsperada, 'dd/MM/yyyy')}">15/01/2024</strong>
+                                                </div>
+                                            </div>
+                                            <div class="col-md-4">
+                                                <div class="p-3 border rounded text-center" 
+                                                     th:classappend="${prestamo.fechaDevolucionReal != null} ? 'bg-success text-white' : ''">
+                                                    <small th:classappend="${prestamo.fechaDevolucionReal != null} ? '' : 'text-muted'" class="d-block">
+                                                        Fecha Devolución Real
+                                                    </small>
+                                                    <strong th:if="${prestamo.fechaDevolucionReal != null}" 
+                                                            th:text="${#temporals.format(prestamo.fechaDevolucionReal, 'dd/MM/yyyy')}">20/01/2024</strong>
+                                                    <strong th:unless="${prestamo.fechaDevolucionReal != null}" class="text-muted">Pendiente</strong>
+                                                </div>
+                                            </div>
+                                        </div>
+                                    </div>
+                                    
+                                    <!-- Estado detallado -->
+                                    <div class="col-12" th:if="${prestamo.estado.name() != 'DEVUELTO'}">
+                                        <div th:if="${prestamo.estaVencido}" class="alert alert-danger">
+                                            <i class="bi bi-exclamation-triangle me-2"></i>
+                                            <strong>Préstamo vencido</strong> - 
+                                            <span th:text="${prestamo.diasRetraso}">0</span> día(s) de retraso
+                                        </div>
+                                        <div th:unless="${prestamo.estaVencido}" class="alert alert-success">
+                                            <i class="bi bi-clock me-2"></i>
+                                            <strong>Préstamo activo</strong> - 
+                                            <span th:text="${prestamo.diasRestantes}">0</span> día(s) restantes para la devolución
+                                        </div>
+                                    </div>
+                                    
+                                    <!-- Observaciones -->
+                                    <div class="col-12" th:if="${prestamo.observaciones != null && !prestamo.observaciones.isEmpty()}">
+                                        <h6 class="text-muted mb-2">
+                                            <i class="bi bi-chat-text me-2"></i>Observaciones
+                                        </h6>
+                                        <div class="p-3 bg-light rounded">
+                                            <p class="mb-0" th:text="${prestamo.observaciones}">Observaciones</p>
+                                        </div>
+                                    </div>
+                                </div>
+                                
+                                <!-- Botones de acción -->
+                                <div class="d-flex justify-content-between mt-4 pt-3 border-top">
+                                    <a th:href="@{/prestamos}" class="btn btn-outline-secondary">
+                                        <i class="bi bi-arrow-left me-2"></i>Volver
+                                    </a>
+                                    <div th:if="${prestamo.estado.name() != 'DEVUELTO'}">
+                                        <a th:href="@{/prestamos/extender/{id}(id=${prestamo.id})}" class="btn btn-warning me-2">
+                                            <i class="bi bi-calendar-plus me-2"></i>Extender Plazo
+                                        </a>
+                                        <a th:href="@{/prestamos/devolver/{id}(id=${prestamo.id})}" class="btn btn-success">
+                                            <i class="bi bi-check-lg me-2"></i>Devolver
+                                        </a>
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+    
+    <!-- Scripts -->
+    <div th:replace="~{fragments/footer :: scripts}"></div>
+</body>
+</html>

@@ -122,10 +122,13 @@
                                     </td>
                                     <td>
                                         <div class="d-flex align-items-center">
+											<!--
                                             <div class="user-avatar me-2" 
                                                  style="width:35px;height:35px;font-size:0.9rem;"
                                                  th:style="${cliente.activo} ? 'background-color: var(--success-color)' : 'background-color: var(--danger-color)'"
-                                                 th:text="${cliente.nombre.substring(0,1).toUpperCase()}">C</div>
+                                                 th:text="${cliente.nombre.substring(0,1).toUpperCase()}">C
+											</div>
+											-->
                                             <div>
                                                 <span th:text="${cliente.nombreCompleto}">Nombre</span>
                                                 <span th:if="${cliente.prestamosVencidos > 0}" 

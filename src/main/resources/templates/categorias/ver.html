@@ -1,0 +1,126 @@
+<!DOCTYPE html>
+<html xmlns:th="http://www.thymeleaf.org" lang="es">
+<head th:replace="~{fragments/footer :: head('Detalle Categoría')}">
+    <title>Categoría - BiblioTech</title>
+</head>
+<body>
+    <div class="wrapper">
+        <!-- Sidebar -->
+        <div th:replace="~{fragments/sidebar :: sidebar}"></div>
+        
+        <!-- Contenido Principal -->
+        <div class="main-content">
+            <!-- Header -->
+            <header th:replace="~{fragments/header :: header}" th:with="pageTitle='Detalle de Categoría'"></header>
+            
+            <!-- Contenido de la Página -->
+            <div class="page-content">
+                <div class="row g-4">
+                    <!-- Columna Izquierda - Datos de la Categoría -->
+                    <div class="col-lg-4">
+                        <div class="card-custom card">
+                            <div class="card-header">
+                                <i class="bi bi-tag me-2"></i>Información de la Categoría
+                            </div>
+                            <div class="card-body text-center">
+                                <i class="bi bi-tag-fill fs-1 text-info mb-3"></i>
+                                <h4 th:text="${categoria.nombre}">Categoría</h4>
+                                <p class="text-muted" th:text="${categoria.descripcion} ?: 'Sin descripción'">
+                                    Descripción
+                                </p>
+                                
+                                <hr>
+                                
+                                <div class="d-flex justify-content-center gap-4 mb-4">
+                                    <div class="text-center">
+                                        <div class="fs-3 fw-bold text-primary" th:text="${categoria.cantidadLibros}">0</div>
+                                        <small class="text-muted">Libros</small>
+                                    </div>
+                                </div>
+                                
+                                <!-- Botones de acción -->
+                                <div class="d-grid gap-2">
+                                    <a th:href="@{/categorias/editar/{id}(id=${categoria.id})}" class="btn btn-warning">
+                                        <i class="bi bi-pencil me-2"></i>Editar
+                                    </a>
+                                    <a th:href="@{/categorias}" class="btn btn-outline-secondary">
+                                        <i class="bi bi-arrow-left me-2"></i>Volver
+                                    </a>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                    
+                    <!-- Columna Derecha - Libros de la Categoría -->
+                    <div class="col-lg-8">
+                        <div class="table-container">
+                            <div class="table-header">
+                                <h5>
+                                    <i class="bi bi-book me-2"></i>Libros en esta Categoría
+                                </h5>
+                                <a th:href="@{/libros/nuevo}" class="btn btn-sm btn-primary">
+                                    <i class="bi bi-plus-circle me-1"></i>Agregar Libro
+                                </a>
+                            </div>
+                            <div class="table-responsive">
+                                <table class="table table-custom mb-0">
+                                    <thead>
+                                        <tr>
+                                            <th>Título</th>
+                                            <th>ISBN</th>
+                                            <th>Autor</th>
+                                            <th class="text-center">Stock</th>
+                                            <th>Acciones</th>
+                                        </tr>
+                                    </thead>
+                                    <tbody>
+                                        <tr th:each="libro : ${libros}">
+                                            <td>
+                                                <i class="bi bi-book me-2" 
+                                                   th:classappend="${libro.disponible} ? 'text-success' : 'text-danger'"></i>
+                                                <span th:text="${libro.titulo}">Título</span>
+                                            </td>
+                                            <td><code th:text="${libro.isbn}">ISBN</code></td>
+                                            <td>
+                                                <a th:href="@{/autores/ver/{id}(id=${libro.idAutor})}" 
+                                                   class="text-decoration-none"
+                                                   th:text="${libro.nombreAutor}">Autor</a>
+                                            </td>
+                                            <td class="text-center">
+                                                <span th:text="${libro.cantidadDisponible} + '/' + ${libro.cantidadTotal}">0/0</span>
+                                            </td>
+                                            <td>
+                                                <a th:href="@{/libros/ver/{id}(id=${libro.id})}" 
+                                                   class="btn btn-sm btn-outline-primary">
+                                                    <i class="bi bi-eye"></i>
+                                                </a>
+                                                <a th:if="${libro.disponible}" 
+                                                   th:href="@{/prestamos/nuevo(libroId=${libro.id})}"
+                                                   class="btn btn-sm btn-outline-success">
+                                                    <i class="bi bi-arrow-right-circle"></i>
+                                                </a>
+                                            </td>
+                                        </tr>
+                                        <tr th:if="${#lists.isEmpty(libros)}">
+                                            <td colspan="5" class="text-center py-4 text-muted">
+                                                <i class="bi bi-inbox me-2"></i>Esta categoría no tiene libros registrados
+                                                <br>
+                                                <a th:href="@{/libros/nuevo}" class="btn btn-primary btn-sm mt-2">
+                                                    <i class="bi bi-plus-circle me-1"></i>Agregar primer libro
+                                                </a>
+                                            </td>
+                                        </tr>
+                                    </tbody>
+                                </table>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+    
+    <!-- Scripts -->
+    <div th:replace="~{fragments/footer :: scripts}"></div>
+</body>
+</html>

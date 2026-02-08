@@ -1,0 +1,229 @@
+<!DOCTYPE html>
+<html xmlns:th="http://www.thymeleaf.org" lang="es">
+<head th:replace="~{fragments/footer :: head('Libros')}">
+    <title>Libros - BiblioTech</title>
+</head>
+<body>
+    <div class="wrapper">
+        <!-- Sidebar -->
+        <div th:replace="~{fragments/sidebar :: sidebar}"></div>
+        
+        <!-- Contenido Principal -->
+        <div class="main-content">
+            <!-- Header -->
+            <header th:replace="~{fragments/header :: header}" th:with="pageTitle='Catálogo de Libros'"></header>
+            
+            <!-- Contenido de la Página -->
+            <div class="page-content">
+                <!-- Alertas -->
+                <div th:replace="~{fragments/footer :: alerts}"></div>
+                
+                <!-- Estadísticas -->
+                <div class="row g-4 mb-4">
+                    <div class="col-md-4">
+                        <div class="stat-card primary">
+                            <div class="d-flex justify-content-between align-items-center">
+                                <div>
+                                    <div class="stat-value" th:text="${totalLibros}">0</div>
+                                    <div class="stat-label">Títulos</div>
+                                </div>
+                                <i class="bi bi-book stat-icon"></i>
+                            </div>
+                        </div>
+                    </div>
+                    <div class="col-md-4">
+                        <div class="stat-card success">
+                            <div class="d-flex justify-content-between align-items-center">
+                                <div>
+                                    <div class="stat-value" th:text="${ejemplaresDisponibles}">0</div>
+                                    <div class="stat-label">Ejemplares Disponibles</div>
+                                </div>
+                                <i class="bi bi-check-circle stat-icon"></i>
+                            </div>
+                        </div>
+                    </div>
+                    <div class="col-md-4">
+                        <div class="stat-card info">
+                            <div class="d-flex justify-content-between align-items-center">
+                                <div>
+                                    <div class="stat-value" th:text="${totalEjemplares}">0</div>
+                                    <div class="stat-label">Total Ejemplares</div>
+                                </div>
+                                <i class="bi bi-collection stat-icon"></i>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+                
+                <!-- Filtros y Búsqueda -->
+                <div class="filter-bar">
+                    <div class="row g-3 align-items-center">
+                        <div class="col-md-4">
+                            <form th:action="@{/libros}" method="get" class="search-box">
+                                <i class="bi bi-search"></i>
+                                <input type="text" 
+                                       class="form-control" 
+                                       name="busqueda"
+                                       th:value="${busqueda}"
+                                       placeholder="Buscar por título, ISBN o autor...">
+                            </form>
+                        </div>
+                        <div class="col-md-2">
+                            <select class="form-select" onchange="filtrarPorAutor(this.value)">
+                                <option value="">Todos los autores</option>
+                                <option th:each="autor : ${autores}" 
+                                        th:value="${autor.id}" 
+                                        th:text="${autor.nombre}"
+                                        th:selected="${autorIdSeleccionado == autor.id}">Autor</option>
+                            </select>
+                        </div>
+                        <div class="col-md-2">
+                            <select class="form-select" onchange="filtrarPorCategoria(this.value)">
+                                <option value="">Todas las categorías</option>
+                                <option th:each="cat : ${categorias}" 
+                                        th:value="${cat.id}" 
+                                        th:text="${cat.nombre}"
+                                        th:selected="${categoriaIdSeleccionada == cat.id}">Categoría</option>
+                            </select>
+                        </div>
+                        <div class="col-md-2">
+                            <div class="btn-group w-100">
+                                <a th:href="@{/libros}" 
+                                   class="btn btn-sm"
+                                   th:classappend="${filtroActual == null} ? 'btn-primary' : 'btn-outline-primary'">
+                                    Todos
+                                </a>
+                                <a th:href="@{/libros(filtro='disponibles')}" 
+                                   class="btn btn-sm"
+                                   th:classappend="${filtroActual == 'disponibles'} ? 'btn-success' : 'btn-outline-success'">
+                                    Disponibles
+                                </a>
+                                <a th:href="@{/libros(filtro='sinstock')}" 
+                                   class="btn btn-sm"
+                                   th:classappend="${filtroActual == 'sinstock'} ? 'btn-danger' : 'btn-outline-danger'">
+                                    Sin Stock
+                                </a>
+                            </div>
+                        </div>
+                        <div class="col-md-2 text-end">
+                            <a th:href="@{/libros/nuevo}" class="btn btn-primary">
+                                <i class="bi bi-plus-circle me-1"></i>Nuevo
+                            </a>
+                        </div>
+                    </div>
+                </div>
+                
+                <!-- Tabla de Libros -->
+                <div class="table-container">
+                    <div class="table-responsive">
+                        <table class="table table-custom mb-0">
+                            <thead>
+                                <tr>
+                                    <th>Título</th>
+                                    <th>ISBN</th>
+                                    <th>Autor</th>
+                                    <th>Categoría</th>
+                                    <th class="text-center">Stock</th>
+                                    <th class="text-center">Disponibles</th>
+                                    <th class="text-center">Acciones</th>
+                                </tr>
+                            </thead>
+                            <tbody>
+                                <tr th:each="libro : ${libros}">
+                                    <td>
+                                        <div class="d-flex align-items-center">
+                                            <div class="me-3 text-center" style="width:40px;">
+                                                <i class="bi bi-book fs-4" 
+                                                   th:classappend="${libro.disponible} ? 'text-success' : 'text-danger'"></i>
+                                            </div>
+                                            <div>
+                                                <span class="fw-bold" th:text="${libro.titulo}">Título</span>
+                                                <br>
+                                                <small class="text-muted" th:if="${libro.anioPublicacion != null}" 
+                                                       th:text="'(' + ${libro.anioPublicacion} + ')'">Año</small>
+                                            </div>
+                                        </div>
+                                    </td>
+                                    <td><code th:text="${libro.isbn}">ISBN</code></td>
+                                    <td>
+                                        <a th:href="@{/autores/ver/{id}(id=${libro.idAutor})}" 
+                                           class="text-decoration-none"
+                                           th:text="${libro.nombreAutor}">Autor</a>
+                                    </td>
+                                    <td>
+                                        <span class="badge bg-secondary" th:text="${libro.nombreCategoria}">Categoría</span>
+                                    </td>
+                                    <td class="text-center">
+                                        <span th:text="${libro.cantidadTotal}">0</span>
+                                    </td>
+                                    <td class="text-center">
+                                        <span th:if="${libro.cantidadDisponible > 0}" 
+                                              class="badge bg-success"
+                                              th:text="${libro.cantidadDisponible}">0</span>
+                                        <span th:unless="${libro.cantidadDisponible > 0}" 
+                                              class="badge bg-danger">0</span>
+                                    </td>
+                                    <td class="text-center">
+                                        <div class="btn-group">
+                                            <a th:href="@{/libros/ver/{id}(id=${libro.id})}" 
+                                               class="btn btn-sm btn-outline-primary"
+                                               data-bs-toggle="tooltip" title="Ver detalles">
+                                                <i class="bi bi-eye"></i>
+                                            </a>
+                                            <a th:href="@{/libros/editar/{id}(id=${libro.id})}" 
+                                               class="btn btn-sm btn-outline-warning"
+                                               data-bs-toggle="tooltip" title="Editar">
+                                                <i class="bi bi-pencil"></i>
+                                            </a>
+                                            <a th:if="${libro.disponible}" 
+                                               th:href="@{/prestamos/nuevo(libroId=${libro.id})}"
+                                               class="btn btn-sm btn-outline-success"
+                                               data-bs-toggle="tooltip" title="Prestar">
+                                                <i class="bi bi-arrow-right-circle"></i>
+                                            </a>
+                                            <form th:action="@{/libros/eliminar/{id}(id=${libro.id})}" 
+                                                  method="post" style="display:inline;">
+                                                <button type="submit" 
+                                                        class="btn btn-sm btn-outline-danger"
+                                                        th:data-confirm-delete="${libro.titulo}"
+                                                        data-bs-toggle="tooltip" title="Eliminar">
+                                                    <i class="bi bi-trash"></i>
+                                                </button>
+                                            </form>
+                                        </div>
+                                    </td>
+                                </tr>
+                                <tr th:if="${#lists.isEmpty(libros)}">
+                                    <td colspan="7">
+                                        <div th:replace="~{fragments/footer :: sin-resultados}"></div>
+                                    </td>
+                                </tr>
+                            </tbody>
+                        </table>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+    
+    <!-- Scripts -->
+    <div th:replace="~{fragments/footer :: scripts}"></div>
+    <script th:inline="javascript">
+        function filtrarPorAutor(autorId) {
+            if (autorId) {
+                window.location.href = '[[@{/libros}]]?autorId=' + autorId;
+            } else {
+                window.location.href = '[[@{/libros}]]';
+            }
+        }
+        
+        function filtrarPorCategoria(categoriaId) {
+            if (categoriaId) {
+                window.location.href = '[[@{/libros}]]?categoriaId=' + categoriaId;
+            } else {
+                window.location.href = '[[@{/libros}]]';
+            }
+        }
+    </script>
+</body>
+</html>
