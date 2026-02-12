@@ -3,13 +3,20 @@ package com.biblioteca.bibliotech.controller;
 import com.biblioteca.bibliotech.dto.response.ClienteResponse;
 import com.biblioteca.bibliotech.dto.response.PrestamoResponse;
 import com.biblioteca.bibliotech.service.*;
+import com.itextpdf.text.DocumentException;
 import jakarta.servlet.http.HttpSession;
+import org.springframework.http.HttpHeaders;
+import org.springframework.http.HttpStatus;
+import org.springframework.http.MediaType;
+import org.springframework.http.ResponseEntity;
 import org.springframework.stereotype.Controller;
 import org.springframework.ui.Model;
 import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.RequestMapping;
 
+import java.util.HashMap;
 import java.util.List;
+import java.util.Map;
 
 /**
  * Controlador para reportes del sistema.
@@ -25,19 +32,22 @@ public class ReporteController {
     private final LibroService libroService;
     private final AutorService autorService;
     private final CategoriaService categoriaService;
-    
+    private final PdfExportService pdfExportService;
+
     public ReporteController(AuthService authService,
                              PrestamoService prestamoService,
                              ClienteService clienteService,
                              LibroService libroService,
                              AutorService autorService,
-                             CategoriaService categoriaService) {
+                             CategoriaService categoriaService,
+                             PdfExportService pdfExportService) {
         this.authService = authService;
         this.prestamoService = prestamoService;
         this.clienteService = clienteService;
         this.libroService = libroService;
         this.autorService = autorService;
         this.categoriaService = categoriaService;
+        this.pdfExportService = pdfExportService;
     }
     
     /**
@@ -128,5 +138,73 @@ public class ReporteController {
         model.addAttribute("titulo", "Estadísticas del Sistema");
         
         return "reportes/estadisticas";
+    }
+
+    /**
+     * Exportar reporte de prestamos vencidos en PDF.
+     */
+    @GetMapping("/prestamos-vencidos/pdf")
+    public ResponseEntity<byte[]> exportarPrestamosVencidosPdf(HttpSession session) throws DocumentException {
+        authService.verificarAccesoAdmin(session);
+
+        prestamoService.actualizarPrestamosVencidos();
+        List<PrestamoResponse> prestamosVencidos = prestamoService.listarVencidosConDetalles();
+
+        byte[] pdfBytes = pdfExportService.generarPdfPrestamosVencidos(prestamosVencidos);
+
+        HttpHeaders headers = new HttpHeaders();
+        headers.setContentType(MediaType.APPLICATION_PDF);
+        headers.setContentDispositionFormData("attachment", "prestamos_vencidos.pdf");
+
+        return new ResponseEntity<>(pdfBytes, headers, HttpStatus.OK);
+    }
+
+    /**
+     * Exportar reporte de clientes morosos en PDF.
+     */
+    @GetMapping("/clientes-morosos/pdf")
+    public ResponseEntity<byte[]> exportarClientesMorososPdf(HttpSession session) throws DocumentException {
+        authService.verificarAccesoAdmin(session);
+
+        List<ClienteResponse> clientesMorosos = clienteService.listarConPrestamosVencidos();
+
+        byte[] pdfBytes = pdfExportService.generarPdfClientesMorosos(clientesMorosos);
+
+        HttpHeaders headers = new HttpHeaders();
+        headers.setContentType(MediaType.APPLICATION_PDF);
+        headers.setContentDispositionFormData("attachment", "clientes_morosos.pdf");
+
+        return new ResponseEntity<>(pdfBytes, headers, HttpStatus.OK);
+    }
+
+    /**
+     * Exportar reporte de estadisticas en PDF.
+     */
+    @GetMapping("/estadisticas/pdf")
+    public ResponseEntity<byte[]> exportarEstadisticasPdf(HttpSession session) throws DocumentException {
+        authService.verificarAccesoAdmin(session);
+
+        Map<String, Object> datos = new HashMap<>();
+        datos.put("totalLibros", libroService.contarTodos());
+        datos.put("totalEjemplares", libroService.contarTotalEjemplares());
+        datos.put("ejemplaresDisponibles", libroService.contarEjemplaresDisponibles());
+        datos.put("ejemplaresPrestados", libroService.contarTotalEjemplares() - libroService.contarEjemplaresDisponibles());
+        datos.put("totalClientes", clienteService.contarTodos());
+        datos.put("clientesActivos", clienteService.contarActivos());
+        datos.put("clientesInactivos", clienteService.contarInactivos());
+        datos.put("prestamosActivos", prestamoService.contarActivos());
+        datos.put("prestamosVencidos", prestamoService.contarVencidos());
+        datos.put("prestamosHoy", prestamoService.contarPrestamosHoy());
+        datos.put("devolucionesHoy", prestamoService.contarDevolucionesHoy());
+        datos.put("totalAutores", autorService.contarTodos());
+        datos.put("totalCategorias", categoriaService.contarTodas());
+
+        byte[] pdfBytes = pdfExportService.generarPdfEstadisticas(datos);
+
+        HttpHeaders headers = new HttpHeaders();
+        headers.setContentType(MediaType.APPLICATION_PDF);
+        headers.setContentDispositionFormData("attachment", "estadisticas.pdf");
+
+        return new ResponseEntity<>(pdfBytes, headers, HttpStatus.OK);
     }
 }
