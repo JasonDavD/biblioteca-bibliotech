@@ -9,6 +9,8 @@ import org.springframework.http.HttpHeaders;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.MediaType;
 import org.springframework.http.ResponseEntity;
+
+import java.io.IOException;
 import org.springframework.stereotype.Controller;
 import org.springframework.ui.Model;
 import org.springframework.web.bind.annotation.GetMapping;
@@ -33,6 +35,7 @@ public class ReporteController {
     private final AutorService autorService;
     private final CategoriaService categoriaService;
     private final PdfExportService pdfExportService;
+    private final ExcelExportService excelExportService;
 
     public ReporteController(AuthService authService,
                              PrestamoService prestamoService,
@@ -40,7 +43,8 @@ public class ReporteController {
                              LibroService libroService,
                              AutorService autorService,
                              CategoriaService categoriaService,
-                             PdfExportService pdfExportService) {
+                             PdfExportService pdfExportService,
+                             ExcelExportService excelExportService) {
         this.authService = authService;
         this.prestamoService = prestamoService;
         this.clienteService = clienteService;
@@ -48,6 +52,7 @@ public class ReporteController {
         this.autorService = autorService;
         this.categoriaService = categoriaService;
         this.pdfExportService = pdfExportService;
+        this.excelExportService = excelExportService;
     }
     
     /**
@@ -206,5 +211,73 @@ public class ReporteController {
         headers.setContentDispositionFormData("attachment", "estadisticas.pdf");
 
         return new ResponseEntity<>(pdfBytes, headers, HttpStatus.OK);
+    }
+
+    /**
+     * Exportar reporte de prestamos vencidos en Excel.
+     */
+    @GetMapping("/prestamos-vencidos/excel")
+    public ResponseEntity<byte[]> exportarPrestamosVencidosExcel(HttpSession session) throws IOException {
+        authService.verificarAccesoAdmin(session);
+
+        prestamoService.actualizarPrestamosVencidos();
+        List<PrestamoResponse> prestamosVencidos = prestamoService.listarVencidosConDetalles();
+
+        byte[] excelBytes = excelExportService.generarExcelPrestamosVencidos(prestamosVencidos);
+
+        HttpHeaders headers = new HttpHeaders();
+        headers.setContentType(MediaType.parseMediaType("application/vnd.openxmlformats-officedocument.spreadsheetml.sheet"));
+        headers.setContentDispositionFormData("attachment", "prestamos_vencidos.xlsx");
+
+        return new ResponseEntity<>(excelBytes, headers, HttpStatus.OK);
+    }
+
+    /**
+     * Exportar reporte de clientes morosos en Excel.
+     */
+    @GetMapping("/clientes-morosos/excel")
+    public ResponseEntity<byte[]> exportarClientesMorososExcel(HttpSession session) throws IOException {
+        authService.verificarAccesoAdmin(session);
+
+        List<ClienteResponse> clientesMorosos = clienteService.listarConPrestamosVencidos();
+
+        byte[] excelBytes = excelExportService.generarExcelClientesMorosos(clientesMorosos);
+
+        HttpHeaders headers = new HttpHeaders();
+        headers.setContentType(MediaType.parseMediaType("application/vnd.openxmlformats-officedocument.spreadsheetml.sheet"));
+        headers.setContentDispositionFormData("attachment", "clientes_morosos.xlsx");
+
+        return new ResponseEntity<>(excelBytes, headers, HttpStatus.OK);
+    }
+
+    /**
+     * Exportar reporte de estadisticas en Excel.
+     */
+    @GetMapping("/estadisticas/excel")
+    public ResponseEntity<byte[]> exportarEstadisticasExcel(HttpSession session) throws IOException {
+        authService.verificarAccesoAdmin(session);
+
+        Map<String, Object> datos = new HashMap<>();
+        datos.put("totalLibros", libroService.contarTodos());
+        datos.put("totalEjemplares", libroService.contarTotalEjemplares());
+        datos.put("ejemplaresDisponibles", libroService.contarEjemplaresDisponibles());
+        datos.put("ejemplaresPrestados", libroService.contarTotalEjemplares() - libroService.contarEjemplaresDisponibles());
+        datos.put("totalClientes", clienteService.contarTodos());
+        datos.put("clientesActivos", clienteService.contarActivos());
+        datos.put("clientesInactivos", clienteService.contarInactivos());
+        datos.put("prestamosActivos", prestamoService.contarActivos());
+        datos.put("prestamosVencidos", prestamoService.contarVencidos());
+        datos.put("prestamosHoy", prestamoService.contarPrestamosHoy());
+        datos.put("devolucionesHoy", prestamoService.contarDevolucionesHoy());
+        datos.put("totalAutores", autorService.contarTodos());
+        datos.put("totalCategorias", categoriaService.contarTodas());
+
+        byte[] excelBytes = excelExportService.generarExcelEstadisticas(datos);
+
+        HttpHeaders headers = new HttpHeaders();
+        headers.setContentType(MediaType.parseMediaType("application/vnd.openxmlformats-officedocument.spreadsheetml.sheet"));
+        headers.setContentDispositionFormData("attachment", "estadisticas.xlsx");
+
+        return new ResponseEntity<>(excelBytes, headers, HttpStatus.OK);
     }
 }
